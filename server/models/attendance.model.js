@@ -1,7 +1,14 @@
 const mongoose = require('mongoose');
 
 const attendanceSchema = new mongoose.Schema({
-	attendance:[{type:mongoose.Types.ObjectId, ref:'hiredmanpower'}],
+	attendances:[{
+               manpower:{
+                    type:mongoose.Types.ObjectId, ref:'hiredmanpower'
+                     },
+                No_hours:{type:Number, default:0},
+                dist_travelled:{type:Number, default:0},
+                OT_hours:{type:Number, default:0}
+                }],
     date:{type:String, default: new Date().toJSON().slice(0,10)}
 },
     {

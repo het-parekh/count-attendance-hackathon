@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const hiredmanpower = require("../models/hired_manpower");
 mongoose.connect(process.env.URI, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,

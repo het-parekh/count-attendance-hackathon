@@ -8,11 +8,19 @@ router.post('/',async (req,res)=>{
         res.status(403).json({"attendance":"attendance is missing"}); 
     }
     try {
-        save_attendance= attendance({
-            attendances:attendtoday
-        });
-        save_attendance.save();
-        res.status(200).send({"attendance":"todays attendance updated"});
+        var is_attendance= await attendance.find({date:new Date().toJSON().slice(0,10)});
+        if(is_attendance){
+            await attendance.updateOne(
+                {date:new Date().toJSON().slice(0,10)},
+                { $push: { attendances: { $each: attendtoday } } }
+            );
+        }else{
+            save_attendance= attendance({
+                attendances:attendtoday
+            });
+            save_attendance.save();
+        }
+        res.status(200).send({"attendance":"attendance updated"});
     } catch (error) {
         console.log(error);
         res.status(500).json({"attendance":error});

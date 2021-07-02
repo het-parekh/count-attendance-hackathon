@@ -4,6 +4,7 @@ import { Switch, Route, Redirect, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux';
 
 import PageNotFound from './PageNotFound';
+import Attendance from './Attendance/Attendance';
 
 const mapStateToProps = state => {
     return {
@@ -20,13 +21,13 @@ class Main extends Component {
     }
 
     render() {
-        const PrivateRoute =  ({ ...props }) => {
+        const PrivateRoute = ({ ...props }) => {
             const isAllowed = this.props.Auth.isAuthenticated
             return isAllowed
                 ? (<Route {...props} />)
                 : (<Redirect to="/login" />)
         };
-        
+
 
         const PublicRoute = ({ ...props }) => {
             const isAllowed = this.props.Auth.isAuthenticated
@@ -36,14 +37,15 @@ class Main extends Component {
         };
 
         return (
-            <div>               
-                <Switch>  
+            <div>
+                <Switch>
                     <Route exact path="/" >
                         <Redirect to="/" />
                     </Route>
-                    
-                    <Redirect to="/pagenotfound"  component = {PageNotFound} />
-                    
+                    <Route to="/attendance" component={Attendance} />
+
+                    <Redirect to="/pagenotfound" component={PageNotFound} />
+
                 </Switch>
             </div>
         )

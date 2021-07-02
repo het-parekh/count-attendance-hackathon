@@ -78,7 +78,7 @@ function Attendance() {
         console.log(res)
         const t = []
         res.data.forEach(d => {
-          t.push({ ...d, isSelected: false })
+          t.push({ ...d, isSelected: false, otHours: 0 })
         })
         setManpower([...t])
         setFiltered([...t])
@@ -92,7 +92,7 @@ function Attendance() {
 
 
   // console.log(manpowerObj, 'and i am so busy ')
-
+  console.log(manpower)
 
   const searchHandler = (e) => {
     const keyString = e.target.value.toLowerCase().trim()
@@ -117,10 +117,12 @@ function Attendance() {
   }
 
 
-  const submitHandler = (e, row, i) => {
+
+
+  const submitHandler = (e, row, i, ot) => {
     const obj = { id: row._id, first_name: row.first_name, last_name: row.last_name }
 
-    axios.post('/attendance/', { attendances: [{ id: row._id, first_name: row.first_name, last_name: row.last_name }] })
+    axios.post('/attendance/', { attendances: [{ id: row._id, first_name: row.first_name, last_name: row.last_name, OT_hours: ot }] })
       .then(res => {
         console.log(res)
         setFiltered(prevState => {
@@ -139,6 +141,14 @@ function Attendance() {
     console.log(obj)
   }
 
+  const otHoursHandler = (e, i) => {
+    e.preventDefault()
+    console.log(e.target.value, i)
+    const copy = [...filtered]
+    copy[i].otHours = e.target.value
+    console.log(copy, 'akdfjakdfj', copy[i].otHours)
+    setFiltered([...copy])
+  }
 
   return (
 
@@ -163,6 +173,7 @@ function Attendance() {
 
               <StyledTableCell>Full Name</StyledTableCell>
               <StyledTableCell>Category</StyledTableCell>
+              <StyledTableCell>OT Hours</StyledTableCell>
               <StyledTableCell>Mark Attendance</StyledTableCell>
 
             </TableRow>
@@ -188,7 +199,11 @@ function Attendance() {
                   <StyledTableCell>{row.catagory}</StyledTableCell>
 
                   <StyledTableCell>
-                    <Button onClick={(e) => { submitHandler(e, row, index) }} variant="contained" color="primary" disabled={!row.isSelected}>
+                    <input type="number" onChange={(e) => { otHoursHandler(e, index) }} min="0" value={row.otHours} />
+                  </StyledTableCell>
+
+                  <StyledTableCell>
+                    <Button onClick={(e) => { submitHandler(e, row, index, row.otHours) }} variant="contained" color="primary" disabled={!row.isSelected}>
                       Mark Attendance
                     </Button>
                   </StyledTableCell>

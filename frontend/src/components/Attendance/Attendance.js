@@ -22,8 +22,7 @@ function Attendance() {
 
   const [manpower, setManpower] = useState([{}])
   const [filtered, setFiltered] = useState([{}])
-  const [isItemSelected, setIsItemSelected] = useState(false)
-  const [manpowerObj, setManPowerObj] = useState([{}])
+  const [todayAttendance, setTodayAttendance] = useState([])
 
   const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -89,6 +88,23 @@ function Attendance() {
 
   }, [])
 
+  useEffect(() => {
+    axios.get('/attendance/' + (new Date().toISOString()).slice(0, 10))
+      .then(res => {
+        console.log('all attend', res.data[0])
+        if (res.data[0]) {
+          const temp = res.data[0].attendances.map((one) => {
+            return one.manpower._id
+          })
+          console.log(temp)
+          setTodayAttendance([...temp])
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }, [filtered])
+
 
 
   // console.log(manpowerObj, 'and i am so busy ')
@@ -113,32 +129,49 @@ function Attendance() {
     const copy = [...filtered]
     copy[i].isSelected = !copy[i].isSelected
     setFiltered([...copy])
-
+    console.log(todayAttendance)
   }
 
 
 
 
   const submitHandler = (e, row, i, ot) => {
-    const obj = { id: row._id, first_name: row.first_name, last_name: row.last_name }
-
-    axios.post('/attendance/', { attendances: [{ id: row._id, first_name: row.first_name, last_name: row.last_name, OT_hours: ot }] })
-      .then(res => {
-        console.log(res)
-        setFiltered(prevState => {
-          return prevState.map((s, index) => {
-            if (i === index) {
-              return { ...s, isSelected: false }
-            } else {
-              return s
-            }
+    if (todayAttendance && todayAttendance.includes(row._id)) {
+      axios.post('/attendance/' + row._id, { manpower: row._id, OT_hours: ot, date: new Date().toISOString().slice(0, 10) })
+        .then(res => {
+          console.log(res)
+          setFiltered(prevState => {
+            return prevState.map((s, index) => {
+              if (i === index) {
+                return { ...s, isSelected: false }
+              } else {
+                return s
+              }
+            })
           })
         })
-      })
-      .catch(err => {
-        console.log(err)
-      })
-    console.log(obj)
+        .catch(err => {
+          console.log(err)
+        })
+    } else {
+      axios.post('/attendance/', { attendances: [{ manpower: row._id, OT_hours: ot }] })
+        .then(res => {
+          console.log(res)
+          setFiltered(prevState => {
+            return prevState.map((s, index) => {
+              if (i === index) {
+                return { ...s, isSelected: false }
+              } else {
+                return s
+              }
+            })
+          })
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+    // console.log(obj)
   }
 
   const otHoursHandler = (e, i) => {
@@ -199,7 +232,7 @@ function Attendance() {
                   <StyledTableCell>{row.catagory}</StyledTableCell>
 
                   <StyledTableCell>
-                    <input type="number" onChange={(e) => { otHoursHandler(e, index) }} min="0" value={row.otHours} />
+                    <input className="otHours" type="number" onChange={(e) => { otHoursHandler(e, index) }} min="0" value={row.otHours} />
                   </StyledTableCell>
 
                   <StyledTableCell>

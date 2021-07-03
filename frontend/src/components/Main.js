@@ -4,6 +4,7 @@ import { Switch, Route, Redirect, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux';
 
 import PageNotFound from './PageNotFound';
+import Dashboard from './Dashboard/Dashboard'
 
 const mapStateToProps = state => {
     return {
@@ -38,10 +39,11 @@ class Main extends Component {
         return (
             <div>               
                 <Switch>  
+
                     <Route exact path="/" >
                         <Redirect to="/" />
                     </Route>
-                    
+                    <Route exact path = '/dashboard' component = {Dashboard}></Route>
                     <Redirect to="/pagenotfound"  component = {PageNotFound} />
                     
                 </Switch>

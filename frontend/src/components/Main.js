@@ -21,13 +21,13 @@ class Main extends Component {
     }
 
     render() {
-        const PrivateRoute =  ({ ...props }) => {
+        const PrivateRoute = ({ ...props }) => {
             const isAllowed = this.props.Auth.isAuthenticated
             return isAllowed
                 ? (<Route {...props} />)
                 : (<Redirect to="/login" />)
         };
-        
+
 
         const PublicRoute = ({ ...props }) => {
             const isAllowed = this.props.Auth.isAuthenticated

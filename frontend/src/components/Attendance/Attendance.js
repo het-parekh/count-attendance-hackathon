@@ -14,6 +14,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
+import './Attendance.css'
+import { v4 } from 'uuid'
 
 
 
@@ -22,8 +24,10 @@ function Attendance() {
 
   const [manpower, setManpower] = useState([{}])
   const [filtered, setFiltered] = useState([{}])
-  const [isItemSelected, setIsItemSelected] = useState(false)
-  const [manpowerObj, setManPowerObj] = useState([{}])
+  const [todayAttendance, setTodayAttendance] = useState([])
+  const [shouldFetchTodayAttendance, setShouldFetchTodayAttendance] = useState(false)
+  const [otArr, setOtArr] = useState([])
+  const [keepZero, setKeepZero] = useState(true)
 
   const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -48,12 +52,12 @@ function Attendance() {
       padding: '2px 4px',
       display: 'flex',
       alignItems: 'center',
-      width: "",
+      width: "90%",
       flexGrow: 1,
       backgroundColor: "#fafafa",
       boxShadow: "4px 2px 16px 2px rgba(0,0,0,.1)",
-      marginTop: "16px",
-      border: "1px solid rgba(0,0,0,.1)"
+      border: "1px solid rgba(0,0,0,.1)",
+      margin: "40px auto"
     },
     input: {
       marginLeft: theme.spacing(1),
@@ -82,12 +86,31 @@ function Attendance() {
         })
         setManpower([...t])
         setFiltered([...t])
+        const arr = Array(res.data.length).fill('0')
+        setOtArr(arr)
       })
       .catch(err => {
         console.log(err)
       })
 
   }, [])
+
+  useEffect(() => {
+    axios.get('/attendance/' + (new Date().toISOString()).slice(0, 10))
+      .then(res => {
+        console.log('all attend', res.data[0])
+        if (res.data[0]) {
+          const temp = res.data[0].attendances.map((one) => {
+            return one.manpower._id
+          })
+          console.log(temp)
+          setTodayAttendance([...temp])
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }, [shouldFetchTodayAttendance])
 
 
 
@@ -113,41 +136,60 @@ function Attendance() {
     const copy = [...filtered]
     copy[i].isSelected = !copy[i].isSelected
     setFiltered([...copy])
-
   }
 
 
 
 
   const submitHandler = (e, row, i, ot) => {
-    const obj = { id: row._id, first_name: row.first_name, last_name: row.last_name }
-
-    axios.post('/attendance/', { attendances: [{ id: row._id, first_name: row.first_name, last_name: row.last_name, OT_hours: ot }] })
-      .then(res => {
-        console.log(res)
-        setFiltered(prevState => {
-          return prevState.map((s, index) => {
-            if (i === index) {
-              return { ...s, isSelected: false }
-            } else {
-              return s
-            }
+    if (todayAttendance && todayAttendance.includes(row._id)) {
+      axios.post('/attendance/' + row._id, { manpower: row._id, OT_hours: ot, date: new Date().toISOString().slice(0, 10) })
+        .then(res => {
+          console.log(res)
+          setFiltered(prevState => {
+            return prevState.map((s, index) => {
+              if (i === index) {
+                return { ...s, isSelected: false }
+              } else {
+                return s
+              }
+            })
           })
         })
-      })
-      .catch(err => {
-        console.log(err)
-      })
-    console.log(obj)
+        .catch(err => {
+          console.log(err)
+        })
+    } else {
+      axios.post('/attendance/', { attendances: [{ manpower: row._id, OT_hours: ot }] })
+        .then(res => {
+          console.log(res)
+          setFiltered(prevState => {
+            return prevState.map((s, index) => {
+              if (i === index) {
+                return { ...s, isSelected: false }
+              } else {
+                return s
+              }
+            })
+          })
+          setShouldFetchTodayAttendance(prev => !prev)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+    // console.log(obj)
   }
 
   const otHoursHandler = (e, i) => {
-    e.preventDefault()
-    console.log(e.target.value, i)
-    const copy = [...filtered]
-    copy[i].otHours = e.target.value
-    console.log(copy, 'akdfjakdfj', copy[i].otHours)
-    setFiltered([...copy])
+    const t = [...otArr]
+    t[i] = e.target.value
+    if (t[i] > 16) {
+      t[i] = 0
+    }
+    setOtArr([...t])
+    setKeepZero(false)
+    console.log(t, 'dfadfadf')
   }
 
   return (
@@ -165,7 +207,7 @@ function Attendance() {
           <SearchIcon />
         </IconButton>
       </Paper>
-      <TableContainer component={Paper}>
+      <TableContainer style={{ width: '90%', margin: 'auto', boxShadow: "4px 2px 16px 2px rgba(0,0,0,.1)", border: "1px solid rgba(0,0,0,.1)" }} component={Paper}>
         <Table >
           <TableHead>
             <TableRow>
@@ -181,12 +223,11 @@ function Attendance() {
           <TableBody>
             {filtered.map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`
-              console.log(row.isSelected)
               return (
-                <StyledTableRow key={row._id}>
+                <StyledTableRow key={index}>
                   <StyledTableCell>
                     <Checkbox
-                      checked={row.isSelected}
+                      checked={row.isSelected || todayAttendance.includes(row._id)}
                       classes={{ checked: classes.checkColor }}
                       inputProps={{ 'aria-labelledby': labelId }}
                       onChange={(e) => checkboxHandler(e, row)}
@@ -198,13 +239,13 @@ function Attendance() {
 
                   <StyledTableCell>{row.catagory}</StyledTableCell>
 
-                  <StyledTableCell>
-                    <input type="number" onChange={(e) => { otHoursHandler(e, index) }} min="0" value={row.otHours} />
+                  <StyledTableCell >
+                    <input className="otHours" key={v4()} type="number" onChange={(e) => { otHoursHandler(e, index) }} min="0" value={keepZero ? 0 : otArr[index]} />
                   </StyledTableCell>
 
                   <StyledTableCell>
                     <Button onClick={(e) => { submitHandler(e, row, index, row.otHours) }} variant="contained" color="primary" disabled={!row.isSelected}>
-                      Mark Attendance
+                      {todayAttendance.includes(row._id) ? "Update Attendance" : "Mark Attendance"}
                     </Button>
                   </StyledTableCell>
 

@@ -1,0 +1,13 @@
+MuiPaper-root{
+  margin-top: 60px;
+}
+
+.otHours{
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  width: 50px;
+  padding:5px 10px;
+}
+.otHours:focus{
+  outline: none;
+}

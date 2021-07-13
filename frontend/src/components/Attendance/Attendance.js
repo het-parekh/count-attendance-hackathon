@@ -11,6 +11,8 @@ import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
+import Checkbox from '@material-ui/core/Checkbox';
+import Button from '@material-ui/core/Button';
 
 import { FormControl, MenuItem } from '@material-ui/core';
 import { InputLabel } from '@material-ui/core';
@@ -19,6 +21,62 @@ import Icon from '@material-ui/core/Icon';
 import './Attendance.css'
 import { v4 } from 'uuid'
 
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: "cornflowerblue",
+    color: theme.palette.common.white,
+  },
+  body: {
+    fontSize: 14,
+  },
+}))(TableCell);
+
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+}))(TableRow);
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    padding: '2px 4px',
+    display: 'flex',
+    alignItems: 'center',
+    width: "90%",
+    flexGrow: 1,
+    backgroundColor: "#fafafa",
+    boxShadow: "4px 2px 16px 2px rgba(0,0,0,.1)",
+    border: "1px solid rgba(0,0,0,.1)",
+    margin: "40px auto"
+  },
+  input: {
+    marginLeft: theme.spacing(1),
+    flex: 1,
+  },
+  iconButton: {
+    padding: 10,
+  },
+  divider: {
+    height: 28,
+    margin: 4,
+  },
+  checkColor: {
+    color: "#1E6AE1 !important"
+  }
+}));
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
 
 
@@ -136,29 +194,62 @@ function Attendance() {
   const [otArr, setOtArr] = useState([])
   const [keepZero, setKeepZero] = useState(true)
 
+  // const StyledTableCell = withStyles((theme) => ({
+  //   head: {
+  //     backgroundColor: "cornflowerblue",
+  //     color: theme.palette.common.white,
+  //   },
+  //   body: {
+  //     fontSize: 14,
+  //   },
+  // }))(TableCell);
 
-  const StyledTableCell = withStyles((theme) => ({
-    head: {
-      backgroundColor: "cornflowerblue",
-      color: theme.palette.common.white,
-    },
-    body: {
-      fontSize: 14,
-    },
-  }))(TableCell);
+  // const StyledTableRow = withStyles((theme) => ({
+  //   root: {
+  //     '&:nth-of-type(odd)': {
+  //       backgroundColor: theme.palette.action.hover,
+  //     },
+  //   },
+  // }))(TableRow);
 
+  // const useStyles = makeStyles((theme) => ({
+  //   root: {
+  //     padding: '2px 4px',
+  //     display: 'flex',
+  //     alignItems: 'center',
+  //     width: "90%",
+  //     flexGrow: 1,
+  //     backgroundColor: "#fafafa",
+  //     boxShadow: "4px 2px 16px 2px rgba(0,0,0,.1)",
+  //     border: "1px solid rgba(0,0,0,.1)",
+  //     margin: "40px auto"
+  //   },
+  //   input: {
+  //     marginLeft: theme.spacing(1),
+  //     flex: 1,
+  //   },
+  //   iconButton: {
+  //     padding: 10,
+  //   },
+  //   divider: {
+  //     height: 28,
+  //     margin: 4,
+  //   },
+  //   checkColor: {
+  //     color: "#1E6AE1 !important"
+  //   }
+  // }));
 
-
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 8;
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  };
+  // const ITEM_HEIGHT = 48;
+  // const ITEM_PADDING_TOP = 8;
+  // const MenuProps = {
+  //   PaperProps: {
+  //     style: {
+  //       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+  //       width: 250,
+  //     },
+  //   },
+  // };
 
   const classes = useStyles();
 
@@ -188,6 +279,7 @@ function Attendance() {
   }, [])
 
   useEffect(() => {
+    console.log("bobobo")
     axios.get('/attendance/' + (new Date().toISOString()).slice(0, 10))
       .then(res => {
         console.log('all attend', res.data[0])
@@ -338,9 +430,11 @@ function Attendance() {
             <TableRow>
               <StyledTableCell></StyledTableCell>
 
-              <StyledTableCell>Invoice Id</StyledTableCell>
+              <StyledTableCell>Vendor Name</StyledTableCell>
               <StyledTableCell>designation</StyledTableCell>
-              <StyledTableCell>working hours</StyledTableCell>
+              <StyledTableCell>Activity</StyledTableCell>
+              <StyledTableCell>Employee Names</StyledTableCell>
+              <StyledTableCell>Assigned Hours</StyledTableCell>
               <StyledTableCell>In Time</StyledTableCell>
               <StyledTableCell>Out Time</StyledTableCell>
               <StyledTableCell>OT hours</StyledTableCell>
@@ -351,7 +445,58 @@ function Attendance() {
             {filtered.map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`
               return (
-                
+                <StyledTableRow key={"row" + index}>
+                  <StyledTableCell key={'checkboxCell' + index}>
+                    <Checkbox
+                      key={"checkbox" + index}
+                      checked={row.isSelected || todayAttendance.includes(row._id)}
+                      classes={{ checked: classes.checkColor }}
+                      inputProps={{ 'aria-labelledby': labelId }}
+                      onChange={(e) => checkboxHandler(e, row)}
+                    />
+                  </StyledTableCell>
+                  <StyledTableCell key={"someId" + index}>
+                    Some Id
+                  </StyledTableCell>
+
+                  <StyledTableCell key={"designation" + index}>
+                    {/* {row.catagory} */}
+                    Some Designation
+                  </StyledTableCell>
+                  <StyledTableCell key={"designation" + index}>
+                    {/* {row.catagory} */}
+                    Some Activity
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    {row.first_name + " " + row.last_name},
+                    {row.first_name + " " + row.last_name},<br />
+                    {row.first_name + " " + row.last_name},
+                    {row.first_name + " " + row.last_name},<br />
+                    {row.first_name + " " + row.last_name}
+
+
+                  </StyledTableCell>
+                  <StyledTableCell key={"hoursperDay" + index}>
+                    Some Hours
+                  </StyledTableCell>
+
+                  <StyledTableCell key={"Intimecell" + index}>
+                    <input key={"Intime" + index} name={"inTime#" + index} className="otHours" type="text" onChange={timeHandler} min="0" value={workingTime[index].inTime} />
+                  </StyledTableCell>
+                  <StyledTableCell key={"outTimecell" + index}>
+                    <input key={"OutTime" + index} name={"outTime#" + index} className="otHours" type="text" onChange={timeHandler} min="0" value={workingTime[index].outTime} />
+                  </StyledTableCell>
+                  <StyledTableCell key={"othoursCell" + index}>
+                    <input key={"othours" + index} className="otHours" type="number" min="0" value={keepZero ? 0 : otArr[index]} readOnly />
+                  </StyledTableCell>
+
+                  <StyledTableCell key={"buttoncell" + index}>
+                    <Button key={"button" + index} onClick={(e) => { submitHandler(e, row, index, row.otHours) }} variant="contained" color="primary" disabled={!row.isSelected}>
+                      {todayAttendance.includes(row._id) ? "Update Attendance" : "Mark Attendance"}
+                    </Button>
+                  </StyledTableCell>
+
+                </StyledTableRow>
               )
             })}
           </TableBody>

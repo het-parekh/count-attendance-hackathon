@@ -13,6 +13,9 @@ import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
+import { FormControl, MenuItem } from '@material-ui/core';
+import { InputLabel } from '@material-ui/core';
+import { Select } from '@material-ui/core';
 import Icon from '@material-ui/core/Icon';
 import './Attendance.css'
 import { v4 } from 'uuid'
@@ -22,9 +25,114 @@ import { v4 } from 'uuid'
 
 function Attendance() {
 
+  let vendors = [
+    {
+      id: "aku",
+      name: "Akash Yadav",
+    },
+    {
+      id: "daksss",
+      name: "Dakshit Vaviya",
+    },
+    {
+      id: "hetzzz",
+      name: "Het Parekh",
+    },
+    {
+      id: "somesssss",
+      name: "Some Random",
+    },
+    {
+      id: "otherssss",
+      name: "Other Random",
+    }
+  ]
+
+  let manPower = [
+    {
+      id: 'aku',
+      designation: 'some designation',
+      workingHours: 'some hours',
+      inTime: '',
+      outTime: '',
+      otHours: ''
+    },
+    {
+      id: 'aku',
+      designation: 'some designation',
+      workingHours: 'some hours',
+      inTime: '',
+      outTime: '',
+      otHours: ''
+    },
+    {
+      id: 'daksss',
+      designation: 'some designation',
+      workingHours: 'some hours',
+      inTime: '',
+      outTime: '',
+      otHours: ''
+    },
+    {
+      id: 'daksss',
+      designation: 'some designation',
+      workingHours: 'some hours',
+      inTime: '',
+      outTime: '',
+      otHours: ''
+    },
+    {
+      id: 'hetzzz',
+      designation: 'some designation',
+      workingHours: 'some hours',
+      inTime: '',
+      outTime: '',
+      otHours: ''
+    },
+    {
+      id: 'hetzzz',
+      designation: 'some designation',
+      workingHours: 'some hours',
+      inTime: '',
+      outTime: '',
+      otHours: ''
+    },
+    {
+      id: 'somesssss',
+      designation: 'some designation',
+      workingHours: 'some hours',
+      inTime: '',
+      outTime: '',
+      otHours: ''
+    },
+    {
+      id: 'somesssss',
+      designation: 'some designation',
+      workingHours: 'some hours',
+      inTime: '',
+      outTime: '',
+      otHours: ''
+    },
+    {
+      id: 'otherssss',
+      designation: 'some designation',
+      workingHours: 'some hours',
+      inTime: '',
+      outTime: '',
+      otHours: ''
+    }
+  ]
+
+  const [allVendors, setAllVendors] = useState([...vendors])
+
+  const [vendor, setVendor] = useState('')
+
   const [manpower, setManpower] = useState([{}])
   const [filtered, setFiltered] = useState([{}])
   const [todayAttendance, setTodayAttendance] = useState([])
+  const [selectVendor, setSelectVendor] = useState('')
+  const [inTime, setInTime] = useState([])
+  const [outTime, setOutTime] = useState([])
   const [shouldFetchTodayAttendance, setShouldFetchTodayAttendance] = useState(false)
   const [otArr, setOtArr] = useState([])
   const [keepZero, setKeepZero] = useState(true)
@@ -74,6 +182,18 @@ function Attendance() {
       color: "#1E6AE1 !important"
     }
   }));
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
   const classes = useStyles();
 
   useEffect(() => {
@@ -86,8 +206,10 @@ function Attendance() {
         })
         setManpower([...t])
         setFiltered([...t])
-        const arr = Array(res.data.length).fill('0')
+        const arr = Array(res.data.length).fill()
         setOtArr(arr)
+        setInTime([...arr])
+        setOutTime([...arr])
       })
       .catch(err => {
         console.log(err)
@@ -139,6 +261,20 @@ function Attendance() {
   }
 
 
+  const inTimeHandler = (e, i) => {
+    console.log(inTime, outTime)
+    // e.preventDefault()
+    const copy = [...inTime]
+    copy[i] = e.target.value
+    console.log(copy)
+    setInTime(copy)
+
+  }
+  const outTimeHandler = (e, i) => {
+    const copy = [...outTime]
+    copy[i] = e.target.value
+    setOutTime([...copy])
+  }
 
 
   const submitHandler = (e, row, i, ot) => {
@@ -181,6 +317,10 @@ function Attendance() {
     // console.log(obj)
   }
 
+  const selectChangeHandler = (e) => {
+    setVendor(e.target.value)
+  }
+
   const otHoursHandler = (e, i) => {
     const t = [...otArr]
     t[i] = e.target.value
@@ -207,44 +347,78 @@ function Attendance() {
           <SearchIcon />
         </IconButton>
       </Paper>
+      {/* <FormControl style={{ marginLeft: '5%', marginBottom: '10px', width: '200px' }}>
+        <InputLabel id="vendor-label">Vendor</InputLabel>
+        <Select
+          labelId="vendor-label"
+          value={vendor}
+          onChange={selectChangeHandler}
+          MenuProps={MenuProps}
+        >
+          <MenuItem key="all" value="all">
+            All
+          </MenuItem>
+          {allVendors.map(vendor => (
+            <MenuItem key={vendor} value={vendor}>
+              {vendor}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl> */}
       <TableContainer style={{ width: '90%', margin: 'auto', boxShadow: "4px 2px 16px 2px rgba(0,0,0,.1)", border: "1px solid rgba(0,0,0,.1)" }} component={Paper}>
         <Table >
           <TableHead>
             <TableRow>
               <StyledTableCell></StyledTableCell>
 
-              <StyledTableCell>Full Name</StyledTableCell>
-              <StyledTableCell>Category</StyledTableCell>
-              <StyledTableCell>OT Hours</StyledTableCell>
+              <StyledTableCell>Invoice Id</StyledTableCell>
+              <StyledTableCell>designation</StyledTableCell>
+              <StyledTableCell>working hours</StyledTableCell>
+              <StyledTableCell>In Time</StyledTableCell>
+              <StyledTableCell>Out Time</StyledTableCell>
+              <StyledTableCell>OT hours</StyledTableCell>
               <StyledTableCell>Mark Attendance</StyledTableCell>
-
             </TableRow>
           </TableHead>
           <TableBody>
             {filtered.map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`
               return (
-                <StyledTableRow key={index}>
-                  <StyledTableCell>
+                <StyledTableRow key={"row" + index}>
+                  <StyledTableCell key={'checkboxCell' + index}>
                     <Checkbox
+                      key={"checkbox" + index}
                       checked={row.isSelected || todayAttendance.includes(row._id)}
                       classes={{ checked: classes.checkColor }}
                       inputProps={{ 'aria-labelledby': labelId }}
                       onChange={(e) => checkboxHandler(e, row)}
                     />
                   </StyledTableCell>
-                  <StyledTableCell component="th" scope="row">
-                    {row.first_name + " " + row.last_name}
+                  <StyledTableCell key={"someId" + index}>
+                    {/* {row.first_name + " " + row.last_name} */}
+                    Some Id
                   </StyledTableCell>
 
-                  <StyledTableCell>{row.catagory}</StyledTableCell>
-
-                  <StyledTableCell >
-                    <input className="otHours" key={v4()} type="number" onChange={(e) => { otHoursHandler(e, index) }} min="0" value={keepZero ? 0 : otArr[index]} />
+                  <StyledTableCell key={"designation" + index}>
+                    {/* {row.catagory} */}
+                    Some Designation
+                  </StyledTableCell>
+                  <StyledTableCell key={"hoursperDay" + index}>
+                    Some Hours
                   </StyledTableCell>
 
-                  <StyledTableCell>
-                    <Button onClick={(e) => { submitHandler(e, row, index, row.otHours) }} variant="contained" color="primary" disabled={!row.isSelected}>
+                  <StyledTableCell key={"Intimecell" + index}>
+                    <input key={"Intime" + index} className="otHours" type="text" onChange={(e) => { inTimeHandler(e, index) }} min="0" value={inTime[index]} />
+                  </StyledTableCell>
+                  <StyledTableCell key={"outTimecell" + index}>
+                    <input key={"OutTime" + index} className="otHours" type="text" onChange={(e) => { outTimeHandler(e, index) }} min="0" value={outTime[index]} />
+                  </StyledTableCell>
+                  <StyledTableCell key={"othoursCell" + index}>
+                    <input key={"othours" + index} className="otHours" type="number" min="0" value={keepZero ? 0 : otArr[index]} readOnly />
+                  </StyledTableCell>
+
+                  <StyledTableCell key={"buttoncell" + index}>
+                    <Button key={"button" + index} onClick={(e) => { submitHandler(e, row, index, row.otHours) }} variant="contained" color="primary" disabled={!row.isSelected}>
                       {todayAttendance.includes(row._id) ? "Update Attendance" : "Mark Attendance"}
                     </Button>
                   </StyledTableCell>

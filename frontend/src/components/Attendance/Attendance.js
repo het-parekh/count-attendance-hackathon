@@ -131,8 +131,8 @@ function Attendance() {
   const [filtered, setFiltered] = useState([{}])
   const [todayAttendance, setTodayAttendance] = useState([])
   const [selectVendor, setSelectVendor] = useState('')
-  const [inTime, setInTime] = useState([])
-  const [outTime, setOutTime] = useState([])
+  const [workingTime, setWorkingTime] = useState([{ inTime: '', outTime: '', otHours: '' }])
+  // const [outTime, setOutTime] = useState([])
   const [shouldFetchTodayAttendance, setShouldFetchTodayAttendance] = useState(false)
   const [otArr, setOtArr] = useState([])
   const [keepZero, setKeepZero] = useState(true)
@@ -201,15 +201,19 @@ function Attendance() {
       .then(res => {
         console.log(res)
         const t = []
+        let temp = []
         res.data.forEach(d => {
-          t.push({ ...d, isSelected: false, otHours: 0 })
+          t.push({ ...d, isSelected: false })
+          temp.push({ inTime: (d.inTime ? d.inTime : ''), outTime: (d.outTime ? d.outTime : '') })
         })
+        setWorkingTime([...temp])
         setManpower([...t])
         setFiltered([...t])
-        const arr = Array(res.data.length).fill()
-        setOtArr(arr)
-        setInTime([...arr])
-        setOutTime([...arr])
+
+        // const arr = Array(res.data.length).fill()
+        // setOtArr(arr)
+        // setInTime([...arr])
+        // setOutTime([...arr])
       })
       .catch(err => {
         console.log(err)
@@ -261,20 +265,17 @@ function Attendance() {
   }
 
 
-  const inTimeHandler = (e, i) => {
-    console.log(inTime, outTime)
-    // e.preventDefault()
-    const copy = [...inTime]
-    copy[i] = e.target.value
-    console.log(copy)
-    setInTime(copy)
+  const timeHandler = (e) => {
+    const index = e.target.name.split('#')[1]
+    const field = e.target.name.split('#')[0]
+    const copy = [...workingTime]
+    copy[index] = { ...workingTime[index], [field]: e.target.value }
+    setWorkingTime([...copy])
+    console.log(copy, 'fadkfjadskfjadsfjk')
+  }
+  // const outTimeHandler = (e, i) => {
 
-  }
-  const outTimeHandler = (e, i) => {
-    const copy = [...outTime]
-    copy[i] = e.target.value
-    setOutTime([...copy])
-  }
+  // }
 
 
   const submitHandler = (e, row, i, ot) => {
@@ -395,7 +396,7 @@ function Attendance() {
                     />
                   </StyledTableCell>
                   <StyledTableCell key={"someId" + index}>
-                    {/* {row.first_name + " " + row.last_name} */}
+                    {row.first_name + " " + row.last_name}
                     Some Id
                   </StyledTableCell>
 
@@ -408,10 +409,10 @@ function Attendance() {
                   </StyledTableCell>
 
                   <StyledTableCell key={"Intimecell" + index}>
-                    <input key={"Intime" + index} className="otHours" type="text" onChange={(e) => { inTimeHandler(e, index) }} min="0" value={inTime[index]} />
+                    <input key={"Intime" + index} name={"inTime#" + index} className="otHours" type="text" onChange={(e) => { timeHandler(e, index) }} min="0" value={workingTime[index].inTime} />
                   </StyledTableCell>
                   <StyledTableCell key={"outTimecell" + index}>
-                    <input key={"OutTime" + index} className="otHours" type="text" onChange={(e) => { outTimeHandler(e, index) }} min="0" value={outTime[index]} />
+                    <input key={"OutTime" + index} name={"outTime#" + index} className="otHours" type="text" onChange={timeHandler} min="0" value={workingTime[index].outTime} />
                   </StyledTableCell>
                   <StyledTableCell key={"othoursCell" + index}>
                     <input key={"othours" + index} className="otHours" type="number" min="0" value={keepZero ? 0 : otArr[index]} readOnly />

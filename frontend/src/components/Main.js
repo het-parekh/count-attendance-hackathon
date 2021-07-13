@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 
 import PageNotFound from './PageNotFound';
 import Dashboard from './Dashboard/Dashboard'
+import Attendance from './Attendance/Attendance';
+import CreateInvoice from './Invoice/CreateInvoice';
 
 const mapStateToProps = state => {
     return {
@@ -44,7 +46,9 @@ class Main extends Component {
                         <Redirect to="/" />
                     </Route>
                     <Route exact path = '/dashboard' component = {Dashboard}></Route>
-                    <Redirect to="/pagenotfound"  component = {PageNotFound} />
+                    <Route exact path = '/attendance' component = {Attendance}></Route>
+                    <Route exact path = '/createinvoice' component = {CreateInvoice}></Route>
+                    <Route component = {PageNotFound}></Route>
                     
                 </Switch>
             </div>

@@ -11,8 +11,7 @@ import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
-import Checkbox from '@material-ui/core/Checkbox';
-import Button from '@material-ui/core/Button';
+
 import { FormControl, MenuItem } from '@material-ui/core';
 import { InputLabel } from '@material-ui/core';
 import { Select } from '@material-ui/core';
@@ -137,6 +136,7 @@ function Attendance() {
   const [otArr, setOtArr] = useState([])
   const [keepZero, setKeepZero] = useState(true)
 
+
   const StyledTableCell = withStyles((theme) => ({
     head: {
       backgroundColor: "cornflowerblue",
@@ -147,41 +147,7 @@ function Attendance() {
     },
   }))(TableCell);
 
-  const StyledTableRow = withStyles((theme) => ({
-    root: {
-      '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.action.hover,
-      },
-    },
-  }))(TableRow);
 
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      padding: '2px 4px',
-      display: 'flex',
-      alignItems: 'center',
-      width: "90%",
-      flexGrow: 1,
-      backgroundColor: "#fafafa",
-      boxShadow: "4px 2px 16px 2px rgba(0,0,0,.1)",
-      border: "1px solid rgba(0,0,0,.1)",
-      margin: "40px auto"
-    },
-    input: {
-      marginLeft: theme.spacing(1),
-      flex: 1,
-    },
-    iconButton: {
-      padding: 10,
-    },
-    divider: {
-      height: 28,
-      margin: 4,
-    },
-    checkColor: {
-      color: "#1E6AE1 !important"
-    }
-  }));
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
@@ -385,46 +351,7 @@ function Attendance() {
             {filtered.map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`
               return (
-                <StyledTableRow key={"row" + index}>
-                  <StyledTableCell key={'checkboxCell' + index}>
-                    <Checkbox
-                      key={"checkbox" + index}
-                      checked={row.isSelected || todayAttendance.includes(row._id)}
-                      classes={{ checked: classes.checkColor }}
-                      inputProps={{ 'aria-labelledby': labelId }}
-                      onChange={(e) => checkboxHandler(e, row)}
-                    />
-                  </StyledTableCell>
-                  <StyledTableCell key={"someId" + index}>
-                    {row.first_name + " " + row.last_name}
-                    Some Id
-                  </StyledTableCell>
-
-                  <StyledTableCell key={"designation" + index}>
-                    {/* {row.catagory} */}
-                    Some Designation
-                  </StyledTableCell>
-                  <StyledTableCell key={"hoursperDay" + index}>
-                    Some Hours
-                  </StyledTableCell>
-
-                  <StyledTableCell key={"Intimecell" + index}>
-                    <input key={"Intime" + index} name={"inTime#" + index} className="otHours" type="text" onChange={(e) => { timeHandler(e, index) }} min="0" value={workingTime[index].inTime} />
-                  </StyledTableCell>
-                  <StyledTableCell key={"outTimecell" + index}>
-                    <input key={"OutTime" + index} name={"outTime#" + index} className="otHours" type="text" onChange={timeHandler} min="0" value={workingTime[index].outTime} />
-                  </StyledTableCell>
-                  <StyledTableCell key={"othoursCell" + index}>
-                    <input key={"othours" + index} className="otHours" type="number" min="0" value={keepZero ? 0 : otArr[index]} readOnly />
-                  </StyledTableCell>
-
-                  <StyledTableCell key={"buttoncell" + index}>
-                    <Button key={"button" + index} onClick={(e) => { submitHandler(e, row, index, row.otHours) }} variant="contained" color="primary" disabled={!row.isSelected}>
-                      {todayAttendance.includes(row._id) ? "Update Attendance" : "Mark Attendance"}
-                    </Button>
-                  </StyledTableCell>
-
-                </StyledTableRow>
+                
               )
             })}
           </TableBody>

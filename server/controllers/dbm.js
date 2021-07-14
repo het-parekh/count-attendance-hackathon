@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const info_table = require("../models/info.model");
 mongoose.connect(process.env.URI, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
@@ -10,7 +11,7 @@ mongoose.connect(process.env.URI, {
 			console.log(err);
 		} else {
 			console.log("Connected to database");
-/* 			hiredmanpower.insertMany([
+/* 			info_tableSchema.insertMany([
 				{
                 first_name : "Gojo",
                 last_name : "Satoru" , 
@@ -70,10 +71,22 @@ mongoose.connect(process.env.URI, {
 				console.log(error)      // Failure
 			});
  */
-			/* 			s= Subject({
-							code:"TYA78",
-							name:"Data Structure",
-							semester:3
+/* 						s= info_table({
+							"REGION_NAME":"Maharastra",
+                            "BRANCHES":[{
+                                "BRANCH_NAME":"Mumbai",
+                                "HUBS":[{
+                                    "HUBNAME":"vileparle"
+                                },
+                                {
+                                    "HUBNAME":"Andheri"
+                                },
+                                {
+                                    "HUBNAME":"Sion"
+                                }]
+
+                            }]
+
 						});
 						s.save(function(err){
 							console.log(err);

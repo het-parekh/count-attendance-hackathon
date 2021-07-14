@@ -2,12 +2,19 @@ MuiPaper-root{
   margin-top: 60px;
 }
 
+.timeHandle{
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  padding: 2px 10px;
+}
+
 .otHours{
   border: 1px solid #aaa;
   border-radius: 4px;
   width: 50px;
   padding:5px 10px;
 }
-.otHours:focus{
+.otHours:focus,
+.timeHandle:focus{
   outline: none;
 }

@@ -7,6 +7,7 @@ import PageNotFound from './PageNotFound';
 import Dashboard from './Dashboard/Dashboard'
 import Attendance from './Attendance/Attendance';
 import CreateInvoice from './Invoice/CreateInvoice';
+import Bill from './Bill/Bill';
 
 const mapStateToProps = state => {
     return {
@@ -48,6 +49,7 @@ class Main extends Component {
                     <Route exact path = '/dashboard' component = {Dashboard}></Route>
                     <Route exact path = '/attendance' component = {Attendance}></Route>
                     <Route exact path = '/createinvoice' component = {CreateInvoice}></Route>
+                    <Route exact path = '/billdetails' component = {Bill}></Route>
                     <Route component = {PageNotFound}></Route>
                     
                 </Switch>

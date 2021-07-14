@@ -1,10 +1,7 @@
 import React,{useEffect,useState} from 'react'
 import { TextField,Button,MenuItem,IconButton} from '@material-ui/core'
-import {Grid,Card,CardActionArea,CardHeader,CardContent} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
-import {v4 as uuidv4} from 'uuid'
 import {AddCircle,HighlightOff} from '@material-ui/icons'
-import './CreateInvoice.css'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,6 +23,9 @@ const useStyles = makeStyles((theme) => ({
         marginBottom:50,
         color:"#1abc9c",
 
+    },
+    box:{
+        backgroundImage: "linear-gradient(to bottom right, lightblue 50%, white 50%)"
     }
 }))
 
@@ -73,7 +73,7 @@ export default function CreateInvoice(){
         }
     }
     return(
-        <div id = "box">
+        <div className = {classes.box}>
         <form className={classes.root}>
             <div className = {classes.header}>
                 <h2  align="center">CREATE INVOICE</h2>
@@ -82,7 +82,7 @@ export default function CreateInvoice(){
                 <TextField name = "invoice"
                     type={"text"}
                     label = "Invoice ID (auto-generated)"
-                    defaultValue={uuidv4()}
+                    defaultValue="IT WILL GET AUTO GENERATED"
                     InputProps={{
                         readOnly: true,
                       }}

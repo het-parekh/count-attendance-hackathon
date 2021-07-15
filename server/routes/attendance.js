@@ -10,10 +10,27 @@ router.post('/', async (req, res) => {
     try {
         var is_attendance = await attendance.find({ date: new Date().toJSON().slice(0, 10) });
         if (is_attendance.length > 0) {
-            await attendance.updateOne(
+            attendtoday.forEach( async(element) => {
+                let query={ date: new Date().toJSON().slice(0, 10), "attendances.invoice": element.invoice };
+                let one_invoice= await attendance.find(query);
+                if(one_invoice.length>0){
+                    let updateDocument = {
+                        "$set": { "attendances.$.OT_hours": element.OT_hours,"attendances.$.In_time": element.In_time, "attendances.$.Out_time": element.Out_time}
+                    };
+                      await attendance.findOneAndUpdate(query,updateDocument); 
+                    
+                }else{
+                    
+                     await attendance.findOneAndUpdate(
+                        { date: new Date().toJSON().slice(0, 10) },
+                        { $push: { attendances:element} }
+                    );  
+                }
+            });
+/*             await attendance.updateOne(
                 { date: new Date().toJSON().slice(0, 10) },
                 { $push: { attendances: { $each: attendtoday } } }
-            );
+            ); */
         } else {
             save_attendance = attendance({
                 attendances: attendtoday
@@ -29,7 +46,7 @@ router.post('/', async (req, res) => {
 
 router.get('/all', async (req, res) => {
     try {
-        all_attendance = await attendance.find().populate('attendances.manpower');
+        all_attendance = await attendance.find().populate('attendances.invoice');
         res.status(200).send(all_attendance);
     } catch (error) {
         console.log(error);
@@ -40,7 +57,7 @@ router.get('/all', async (req, res) => {
 router.get('/:date', async (req, res) => {
     var date = req.params.date;
     try {
-        attendance_day = await attendance.find({ date: date }).populate('attendances.manpower');
+        attendance_day = await attendance.find({ date: date }).populate('attendances.invoice');
         res.status(200).send(attendance_day);
     } catch (error) {
         console.log(error);
@@ -51,13 +68,12 @@ router.get('/:date', async (req, res) => {
 router.post('/:id', async (req, res) => {
     var id = req.params.id;
     var prev_date = req.body.date;
-    console.log(id, prev_date, req.body.OT_hours, 'wht is this')
-    const query = { date: prev_date, "attendances.manpower": id };
+    const query = { date: prev_date, "attendances.invoice": id };
     const updateDocument = {
         $set: { "attendances.$.OT_hours": req.body.OT_hours }
     };
     try {
-        attendance_day= await attendance.update(query,updateDocument);  
+        attendance_day= await attendance.updateOne(query,updateDocument);  
         res.status(200).send(attendance_day);
     } catch (error) {
         console.log(error);

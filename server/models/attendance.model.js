@@ -2,11 +2,10 @@ const mongoose = require('mongoose');
 
 const attendanceSchema = new mongoose.Schema({
 	attendances:[{
-               manpower:{
-                    type:mongoose.Types.ObjectId, ref:'hiredmanpower'
-                     },
-                No_hours:{type:Number, default:0},
-                dist_travelled:{type:Number, default:0},
+                invoice:{type:mongoose.Types.ObjectId, ref:'invoice'},
+                present_employee:[{type:String}],
+                In_time:{type:Number, default:0},
+                Out_time:{type:Number, default:0},
                 OT_hours:{type:Number, default:0}
                 }],
     date:{type:String, default: new Date().toJSON().slice(0,10)}

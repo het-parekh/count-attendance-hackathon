@@ -1,6 +1,7 @@
 import React,{useState} from 'react'
 import { TextField,Button} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
+import Loading from '../Loading'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,14 +27,13 @@ const useStyles = makeStyles((theme) => ({
 
     },
     box:{
+        padding:80,
         backgroundImage: "linear-gradient(to bottom right, lightblue 50%, white 50%)"
     }
 }))
 
-export default function Login(){
+export default function Login(props){
     const classes = useStyles()
-
-    const regions = ['Jorse','Bolo','jaiMatadi']
 
     const [info,setInfo] = useState({email:"",password:""})
     const [err,setErr] = useState({email:"",password:""})
@@ -51,8 +51,19 @@ export default function Login(){
             setErr({...err,password:"This field cannot be left empty"})
             return
         }
+        const creds = { email: info.email, pass: info.password }
+        props.LoginUser(creds)
         setErr({email:"",password:""})
+
     }
+
+
+    if (props.Auth.isLoading) {
+        return (
+          <Loading />
+        );
+      }
+      
     return(
         <div className = {classes.box}>
         <form className={classes.root}>
@@ -60,7 +71,7 @@ export default function Login(){
                 <h2  align="center">LOGIN</h2>
             </div>
             <div>
-                <TextField name = "Email"
+                <TextField name = "email"
                     error = {err.email}
                     type="email"
                     label = "Enter an appropriate Email"
@@ -85,7 +96,7 @@ export default function Login(){
             </div>
             
             <div align="center">
-                <Button onClick={handleSubmit} variant = "contained" style={{backgroundColor:"#00b300",color:"#fff",marginTop:"30px"}}> Add Invoice</Button>
+                <Button onClick={handleSubmit} variant = "contained" style={{backgroundColor:"#1abc9c",color:"#fff",marginTop:"30px"}}> lOG IN</Button>
             </div>
         </form>
         </div>

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux';
+import {LoginUser,LogoutUser,checkStatus} from './../redux/actionCreators/Auth'
 
 import PageNotFound from './PageNotFound';
 import Dashboard from './Dashboard/Dashboard'
@@ -10,22 +11,32 @@ import CreateInvoice from './Invoice/CreateInvoice';
 import Bill from './Bill/Bill';
 import Login from './Auth/Login';
 import AddUser from './Auth/AddUser';
+import Loading from './Loading'
 
 const mapStateToProps = state => {
     return {
+        Auth: state.Auth,
     }
 }
 
 const mapDispatchToProps = (dispatch) => ({
-
+    LoginUser: (creds) => dispatch(LoginUser(creds)),
+    LogoutUser: () => dispatch(LogoutUser()),
+    checkStatus: () => dispatch(checkStatus()),
 })
 
 class Main extends Component {
 
     componentDidMount() {
+        this.props.checkStatus()
     }
 
     render() {
+        if(this.props.Auth.checkingStatus === true){
+            return (
+                <Loading />
+            )
+        }
         const PrivateRoute = ({ ...props }) => {
             const isAllowed = this.props.Auth.isAuthenticated
             return isAllowed
@@ -48,13 +59,19 @@ class Main extends Component {
                     <Route exact path="/" >
                         <Redirect to="/" />
                     </Route>
-                    <Route exact path = '/login' component = {Login}></Route>
-                    <Route exact path = '/adduser' component = {AddUser}></Route>
-                    <Route exact path = '/dashboard' component = {Dashboard}></Route>
-                    <Route exact path = '/attendance' component = {Attendance}></Route>
-                    <Route exact path = '/createinvoice' component = {CreateInvoice}></Route>
-                    <Route exact path = '/billdetails' component = {Bill}></Route>
+                    <PublicRoute exact path = '/login' component = {() => <Login  Auth={this.props.Auth} LoginUser={this.props.LoginUser} />}></PublicRoute>
+                    <PrivateRoute exact path = '/adduser' component = {AddUser}></PrivateRoute>
+                    <PrivateRoute exact path = '/dashboard' component = {Dashboard}></PrivateRoute>
+                    <PrivateRoute exact path = '/attendance' component = {Attendance}></PrivateRoute>
+                    <PrivateRoute exact path = '/createinvoice' component = {CreateInvoice}></PrivateRoute>
+                    <PrivateRoute exact path = '/billdetails' component = {Bill}></PrivateRoute>
+                    <Route exact path="/" >
+                            <Redirect to="/login" />
+                    </Route>
+
                     <Route component = {PageNotFound}></Route>
+
+
                     
                 </Switch>
             </div>

@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
 const info_tableSchema = new mongoose.Schema({
-    REGION_NAME:{type: String },
-    BRANCHES:[{
-        BRANCH_NAME:{type :String},
-        HUBS:[{
-            HUBNAME:{type:String}
+    name:{type: String },
+    branches:[{
+        name:{type :String},
+        hubs:[{
+            name:{type:String}
         }]
 
     }]

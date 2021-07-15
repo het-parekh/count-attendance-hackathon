@@ -1,6 +1,7 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import { TextField,Button,MenuItem} from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles ,lighten} from '@material-ui/core/styles';
+import axios from 'axios'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -27,43 +28,51 @@ const useStyles = makeStyles((theme) => ({
     },
     box:{
         backgroundImage: "linear-gradient(to bottom right, lightblue 50%, white 50%)"
-    }
+    },
+    flashMessage:{
+        color: theme.palette.success.dark,
+        backgroundColor: lighten(theme.palette.success.light, 0.85),
+        fontSize:'22px',
+        width:'100%',
+        textAlign:'center'
+      },
 }))
 
 export default function AddUser(){
     const classes = useStyles()
 
-    const regions = 
-    [
-        {
-            name:"Gujarat",
-            branches:
-            [
-                {
-                    name:"Mumbai",
-                
-                    hubs:
-                    [
-                        {name:"Andheri"},
-                        {name:"kandivali"}
-                    ]
-                }
-            ]
-        }
-    ]
-
-    console.log(regions)
+    const [flash,setFlash] = useState()
+    const [regions,setRegions] = useState([])
     const [info,setInfo] = useState({fn:"",ln:"",password:"",confirm_password:"",email:""})
-    const [err,setErr] = useState({email:"",password:""})
-    const [dropdowns,setDropdowns] = useState({region:"",branch:"",hub:""})
+    const [err,setErr] = useState({})
+    const [dropdowns,setDropdowns] = useState({region:"",branch:"",hub:"",role:"User"})
     const [dropdownData,setDropdownData] = useState({optionHubs:[],optionBranches:[]})
+    
+    useEffect(() => {
+        axios.get('infotable')
+        .then(res => {
+            console.log(res,'yoyoo')
+            setRegions(res.data)
+        })
+    },[])
     
     function handleInput(e){
         setInfo({...info,[e.target.name] : e.target.value})
     }
 
+    useEffect(() => {
+        if(info.password != info.confirm_password){
+            setErr({...err,confirm_password:"Passwords don't match"})
+        }
+        else{
+            setErr({...err,confirm_password:""})
+        }
+    },[info.confirm_password])
+
     function handleDropdowns(e){
-        console.log('dd',e.target.name)
+        if(e.target.name == "role"){
+            setDropdowns({...dropdowns,role:e.target.value})
+        }
         if (e.target.name == "region"){
             let optionBranches = []
             regions.forEach((region) =>{
@@ -73,12 +82,11 @@ export default function AddUser(){
                     })
                 }
             })
-            setDropdowns({region:e.target.value,branch:"",hub:""})
+            setDropdowns({...dropdowns,region:e.target.value,branch:"",hub:""})
             setDropdownData({...dropdownData,optionHubs:[],optionBranches:optionBranches})
         }
         if(e.target.name == "branch"){
             let optionHubs = []
-            console.log("here")
             regions.forEach((region) =>{
                 if (region.name == dropdowns.region){
                     region.branches.forEach(branch => {
@@ -104,7 +112,35 @@ export default function AddUser(){
             setErr({...err,confirm_password:"Passwords don't match"})
             return
         }
-        console.log(info)
+        let data = {
+            first_name:info.fn,
+            last_name:info.ln,
+            email:info.email,
+            role:dropdowns.role,
+            password:info.password,
+            hub:dropdowns.hub,
+            branch:dropdowns.branch,
+            region:dropdowns.region,
+        }
+        console.log(data)
+        axios.post('/user',data,{withCredentials:true})
+        .then(res => {
+            console.log(res,'signedup')
+            setInfo({fn:"",ln:"",password:"",confirm_password:"",email:""})
+            setErr({})
+            setDropdowns({region:"",branch:"",hub:"",role:"User"})
+            setDropdownData({optionHubs:[],optionBranches:[]})
+            setRegions([])
+
+            window.scrollTo(0, 0)
+            setFlash("Added User Successfully")
+            setTimeout(() => {
+                setFlash("")
+            },5000)
+
+
+        })
+        .catch(err => console.log(err.response))
     }
     return(
         <div className = {classes.box}>
@@ -112,6 +148,7 @@ export default function AddUser(){
             <div className = {classes.header}>
                 <h2  align="center">ADD USER</h2>
             </div>
+            <div className={classes.flashMessage}>{flash}</div>
             <div>
                 <TextField name = "fn"
                     error = {err.fn}
@@ -135,7 +172,7 @@ export default function AddUser(){
                 </TextField>
             </div>
             <div>
-                <TextField name = "Email"
+                <TextField name = "email"
                     error = {err.email}
                     type="email"
                     label = "Enter an appropriate Email"
@@ -157,17 +194,30 @@ export default function AddUser(){
                     helperText={err.password}
                 >
                 </TextField>
-                <TextField name = "password"
+                <TextField name = "confirm_password"
                     error={err.confirm_password}
                     type="Password"
                     label = "Confirm your password"
                     style={{width:"30ch"}}
-                    value={info.password}
+                    value={info.confirm_password}
                     onChange={handleInput}
                     helperText={err.confirm_password}
                 >
                 </TextField>
             </div>
+            <div>
+            <TextField name = "role"
+                    select
+                    label = "Role"
+                    style={{width:"50ch"}}
+                    value={dropdowns.role}
+                    onChange={handleDropdowns}
+            >
+                <MenuItem key={"admin"} value="Admin">Admin</MenuItem>
+                <MenuItem key={"user"} value="User">User</MenuItem>
+            </TextField>
+            </div>
+
             <div>
             <TextField name = "region"
                     select
@@ -224,7 +274,7 @@ export default function AddUser(){
             </div>
             
             <div align="center">
-                <Button onClick={handleSubmit} variant = "contained" style={{backgroundColor:"#00b300",color:"#fff",marginTop:"30px"}}> Add Invoice</Button>
+                <Button onClick={handleSubmit} variant = "contained" style={{backgroundColor:"#00b300",color:"#fff",marginTop:"30px"}}> Add User</Button>
             </div>
         </form>
         </div>

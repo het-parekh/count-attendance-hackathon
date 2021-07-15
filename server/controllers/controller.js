@@ -10,12 +10,13 @@ module.exports.authenticate=(req,res,next)=>{
             const user = {
                 id: User.id,
                 email: User.email,
-                type: User.type,
                 role:User.role,
-                department: User.department,
                 first_name: User.first_name,
                 last_name: User.last_name,
-                gender: User.gender
+                hub: User.hub,
+                branch: User.branch,
+                region: User.region,
+
               };
               /* console.log(user); */
             res.cookie("token",jwt.sign(

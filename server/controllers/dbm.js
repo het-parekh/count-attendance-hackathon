@@ -149,15 +149,19 @@ async function resetPassword(token, newPassword) {
 
 async function addNewUserToDatabase(val){
     var user=User();
-    const password=makePassword(8);
+    const password=val.password;
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, salt);
-    user.first_name=val.first_name.trim(),
-    user.last_name=val.last_name.trim(),
-    user.email=val.email.trim(),
+    user.first_name=val.first_name.trim();
+    user.last_name=val.last_name.trim();
+    user.email=val.email.trim();
     user.password=hash;
-    user.gender= typeof val.gender!="undefined" ? val.gender:"Male",
-    user.role= typeof val.type!="undefined" ? val.role:"User"
+    user.role= typeof val.type!="undefined" ? val.role:"User";
+    user.hub=val.hub.trim();
+    user.branch=val.branch.trim();
+    user.region=val.region.trim();
+    
+
 try {
     return await user.save();	
 } catch (error) {

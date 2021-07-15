@@ -1,7 +1,9 @@
 import React,{useEffect,useState} from 'react'
 import { TextField,Button,MenuItem,IconButton} from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles,lighten } from '@material-ui/core/styles';
 import {AddCircle,HighlightOff} from '@material-ui/icons'
+import axios from 'axios'
+import Loading from '../Loading'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -20,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     },
 
     header:{
-        marginBottom:50,
+        marginBottom:10,
         color:"white",
         border:"1px solid #1abc9c",
         backgroundColor:"#1abc9c"
@@ -28,39 +30,68 @@ const useStyles = makeStyles((theme) => ({
     },
     box:{
         backgroundImage: "linear-gradient(to bottom right, lightblue 50%, white 50%)"
-    }
+    },
+    flashMessage:{
+        color: theme.palette.success.dark,
+        backgroundColor: lighten(theme.palette.success.light, 0.85),
+        fontSize:'22px',
+        width:'100%',
+        textAlign:'center'
+      },
 }))
 
 export default function CreateInvoice(){
     const classes = useStyles()
 
-    const vendors = ['Jorse','Bolo','jaiMatadi']
-
-    const [vendor,setVendor]  = useState(vendors[0])
-    const [manpowerArr,setManpowerArr] = useState([{"designation" : "Gunman","name":""}])
-    const [info,setInfo] = useState({activity:"",hours:""})
+    const [flash,setFlash]  = useState("")
+    const [vendorArr,setVendorArr]  = useState()
+    const [vendor,setVendor]  = useState({id:'',name:''})
+    const [manpowerArr,setManpowerArr] = useState({designation : "Gunman",names:[""]})
+    const [info,setInfo] = useState({activity:"",hours:"",vendor_id:""})
     const [err,setErr] = useState({activity:"",hours:""})
+    const [userInfo,setUserInfo] = useState({region:"",branch:"",hub:""})
+
+    useEffect(() => {
+        axios.get('/user/checkstatus')
+        .then((res) => {
+            console.log(res.data,'checking status ... ')
+            setUserInfo({region:res.data.user.region,branch:res.data.user.branch,hub:res.data.user.hub})
+        })
+
+        axios.get('/vendor')
+        .then((res) => {
+            console.log(res.data)
+            setVendorArr(res.data)
+            setVendor({id:res.data[0]._id,name:res.data[0].vendor_name})
+        })
+    },[])
+
+    function changeVendor(e){
+        setVendor({id:e.target.name,name:e.target.value})
+    }
 
     function handleInput(e){
         setInfo({...info,[e.target.name] : e.target.value})
     }
 
     function changeManpower(e){
-        let type = e.target.name.split("#")[1]
-        let count = e.target.name.split("#")[0]
-        let value = e.target.value
-        let temp = [...manpowerArr]
-        temp[count] = {...manpowerArr[count],[type] : value}
-        setManpowerArr(temp)
+        if(e.target.name == "designation"){
+            setManpowerArr({...manpowerArr,designation:e.target.value}) 
+        }
+        else{
+            let index = e.target.name.split("#")[0]
+            let temp = manpowerArr.names
+            temp[index] = e.target.value
+            setManpowerArr({...manpowerArr,names:temp})
+        }
     }
-    console.log(manpowerArr)
     function deleteManpower(e){
         let val = e.currentTarget.value
-        setManpowerArr(manpowerArr.filter((manpower,index) => index != Number(val)) )
+        setManpowerArr({...manpowerArr,names:manpowerArr.names.filter((names,index) => index != Number(val)) })
     }
 
     function addManpower(){
-        setManpowerArr([...manpowerArr,{"designation" : "Gunman","name":""} ])
+        setManpowerArr({...manpowerArr,names:[...manpowerArr.names,""] })
     }
 
     function handleSubmit(){
@@ -72,38 +103,77 @@ export default function CreateInvoice(){
         }
         if(info.activity !== "" && info.hours !== ""){
             console.log("success")
+            console.log(manpowerArr)
+            let data = {
+                Manpower_Names:manpowerArr.names,
+                Designation:manpowerArr.designation,
+                Hours_per_day:info.hours,
+                Activity:info.activity,
+                Hub:userInfo.hub,
+                Branch:userInfo.branch,
+                Region:userInfo.region,
+                Vendor:vendor.id,
+            }
+            console.log("data cre nivoice",data)
+            axios.post('/invoice',data,{withCredentials:true})
+            .then(res => {
+                console.log("create success",res)
+                setVendor({id:'',name:''})
+                setManpowerArr({designation : "Gunman",names:[""]})
+                setInfo({activity:"",hours:"",vendor_id:""})
+                setErr({activity:"",hours:""})
+
+                window.scrollTo(0, 0)
+                setFlash("Added User Successfully")
+                setTimeout(() => {
+                    setFlash("")
+                },5000)
+            })
+            .catch(err => console.log(err.response))
         }
     }
+    if(!vendorArr){
+        return (<Loading />)
+    }
+    
     return(
         <div className = {classes.box}>
         <form className={classes.root}>
             <div className = {classes.header}>
                 <h2  align="center">CREATE INVOICE</h2>
             </div>
+            <div className={classes.flashMessage}>{flash}</div>
+            <div>
+                <TextField key = "Region" 
+                                name = "region"
+                                label = "Region"
+                                InputProps={{
+                                    inputProps:{
+                                        style:{textAlign:"center",color:"#404040",fontWeight:600}
+                                    },
+                                    readOnly:true,
+                                }}
+                                variant="filled"
+                                defaultValue={userInfo.region}
+                                value = {userInfo.region}
+                                style={{width:"30ch",color:"#fff",float:"right"}}
+                                
+                            >
+                </TextField>
+            </div>
             <div>
                 <TextField name = "invoice"
                     type={"text"}
                     label = "Invoice ID (auto-generated)"
-                    defaultValue="IT WILL GET AUTO GENERATED"
                     InputProps={{
                         readOnly: true,
                       }}
                     style={{width:"62ch"}}
+                    disabled
                 >
                 </TextField>
             </div>
-            <div>
-                <TextField
-                    select
-                    label = "Enter Vendor Name"
-                    value={vendor}
-                    onChange={(e) => setVendor(e.target.value)}
-                >
-                    {vendors.map((vendor) => (
-                        <MenuItem key={vendor}  value={vendor}>{vendor}</MenuItem>
-                    ))}
-                </TextField>
-            </div>
+            
             <div>
             <div>
                 <TextField name = "activity"
@@ -128,33 +198,52 @@ export default function CreateInvoice(){
                 >
                 </TextField>
             </div>
+            <center>
+            <div>
+                <TextField
+                    select
+                    label = "Select Vendor Name"
+                    name={vendor.id}
+                    value={vendor.name}
+                    onChange={changeVendor}
+                >
+                    {vendorArr.map((vendor,index) => (
+                        <MenuItem key={index}  value={vendor.vendor_name}>{vendor.vendor_name}</MenuItem>
+                    ))}
+                </TextField>
             </div>
+
+            <div>
+                <TextField key = {"manpowerDesignation"} 
+                                select
+                                name = {"designation"}
+                                label = "Provide designation"
+                                value={manpowerArr.designation}
+                                defaultValue={manpowerArr.designation}
+                                onChange={changeManpower}
+                            >
+                    <MenuItem key={"Gunman"} value="Gunman">Gunman</MenuItem>
+                    <MenuItem key={"Driver"} value="Driver">Driver</MenuItem>
+                    <MenuItem key={"Vehicle"} value="Vehicle">Vehicle</MenuItem>
+                </TextField>
+            </div>
+            </center>
+            </div>
+
             <div>
             <h3 style={{marginBottom:"-15px"}}>Add Manpower <IconButton component="label" onClick={addManpower}><AddCircle style={{color:"limegreen"}}/></IconButton></h3>
-            {manpowerArr.map((manpower,index) => (
+            {manpowerArr.names.map((name,index) => (
                     <div key = {"manpower" + index}>
                         <TextField key = {"manpowerName" + index} 
                             name = {index+"#name"}
                             type="text"
                             label = "Enter Name"
-                            value = {manpower.name}
-                            defaultValue = {manpower.name}
+                            value = {name}
+                            defaultValue = {name}
                             onChange={changeManpower}
                         >
                         </TextField>
-                        <TextField key = {"manpowerDesignation" + index} 
-                            select
-                            name = {index+"#designation"}
-                            label = "Provide designation"
-                            value={manpower.designation}
-                            defaultValue={manpower.designation}
-                            onChange={changeManpower}
-                        >
-                            <MenuItem key={"Gunman"} value="Gunman">Gunman</MenuItem>
-                            <MenuItem key={"Driver"} value="Driver">Driver</MenuItem>
-                            <MenuItem key={"Vehicle"} value="Vehicle">Vehicle</MenuItem>
-                        </TextField>
-                        {manpowerArr.length > 1?
+                        {manpowerArr.names.length > 1?
                         <IconButton style = {{color:"red",marginTop:"10px"}} value = {index} onClick={deleteManpower}><HighlightOff /></IconButton>
                         :<div></div>}
                     </div>

@@ -5,7 +5,7 @@ const db = require('./controllers/dbm');
 const manpower = require('./routes/hiredmanpower');
 const attendance = require('./routes/attendance');
 const info_table= require('./routes/infotable');
-const venodor=require('./routes/vendor');
+const vendor=require('./routes/vendor');
 const invoice=require('./routes/invoice');
 const passport = require('passport');
 const cors = require('cors');
@@ -24,7 +24,7 @@ app.use(passport.initialize());
 
 app.use('/user',user);
 app.use('/invoice',invoice);
-app.use('/vendor',venodor);
+app.use('/vendor',vendor);
 app.use('/infotable',info_table);
 app.use('/attendance', attendance);
 app.use('/manpower', manpower);

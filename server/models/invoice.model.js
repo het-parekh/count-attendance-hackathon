@@ -7,7 +7,8 @@ const invoice_Schema = new mongoose.Schema({
 	Branch: { type: String },
 	Region: { type: String },
 	Hours_per_day: { type: Number },
-	Activity: { type: String }
+	Activity: { type: String },
+	Vendor:{type:mongoose.Schema.Types.ObjectId, ref: 'vendor'}
 
 });
 

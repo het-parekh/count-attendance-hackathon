@@ -3,9 +3,10 @@ const invoice = require('../models/invoice.model');
 const router=require('express').Router();
 
 router.post('/',async (req,res)=>{
-    var {  Manpower_Names,Designation,Hub,Branch,Region,Hours_per_day,Activity}= req.body;
-    if(Manpower_Names.length<0 || typeof Designation==='undefined' || typeof Hub==='undefined' || typeof Branch==='undefined' || typeof region==='undefined' || typeof Activity ==='undefined'
-      ||  Designation==='' || Hub==='' || Branch==='' || Region==='' || Activity===''){
+    const {  Manpower_Names, Designation, Hours_per_day, Activity, Hub, Branch, Region, Vendor} = req.body;
+    console.log(Manpower_Names,Designation,Hours_per_day,Activity,Hub,Branch,Region,Vendor)
+    if(Manpower_Names.length<0 || typeof Designation==='undefined' || typeof Hub==='undefined' || typeof Branch==='undefined' || typeof Region==='undefined' || typeof Activity ==='undefined'
+      ||  Designation==='' || Hub==='' || Branch==='' || Region==='' || Activity==='' || Vendor===''){
        return res.status(403).send({"error":"please provide all the information"});
     }
     try {
@@ -15,8 +16,10 @@ router.post('/',async (req,res)=>{
            new_invoice.Hub=Hub.trim(), 
            new_invoice.Branch=Branch.trim(),
            new_invoice.Region=Region.trim(),
-           new_invoice.Hours_per_day=Hours_per_day,
+           new_invoice.Hours_per_day=Hours_per_day.trim(),
            new_invoice.Activity=Activity.trim()
+           new_invoice.Vendor=Vendor.trim()
+
         let result= await new_invoice.save();
         res.status(200).send(result);
     } catch (error) {

@@ -2,6 +2,10 @@ MuiPaper-root{
   margin-top: 60px;
 }
 
+.manpowerNames{
+  display: flex;
+}
+
 .timeHandle{
   border: 1px solid #aaa;
   border-radius: 4px;

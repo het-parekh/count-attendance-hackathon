@@ -12,6 +12,7 @@ import Bill from './Bill/Bill';
 import Login from './Auth/Login';
 import AddUser from './Auth/AddUser';
 import Loading from './Loading'
+import CreateVendor from './CreateVendor/CreateVendor';
 
 const mapStateToProps = state => {
     return {
@@ -53,8 +54,8 @@ class Main extends Component {
         };
 
         return (
-            <div>               
-                <Switch>  
+            <div>
+                <Switch>
 
                     <Route exact path="/" >
                         <Redirect to="/" />
@@ -65,6 +66,7 @@ class Main extends Component {
                     <PrivateRoute exact path = '/attendance' component = {Attendance}></PrivateRoute>
                     <PrivateRoute exact path = '/createinvoice' component = {CreateInvoice}></PrivateRoute>
                     <PrivateRoute exact path = '/billdetails' component = {Bill}></PrivateRoute>
+                    <PrivateRoute exact path = '/createvendor' component={CreateVendor} />
                     <Route exact path="/" >
                             <Redirect to="/login" />
                     </Route>

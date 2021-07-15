@@ -1,6 +1,6 @@
 const vendor = require('../models/vendor.model');
 
-const router=require('express').Router();
+const router = require('express').Router();
 
 router.get('/', async (req,res) => {
     try {
@@ -32,4 +32,4 @@ router.post('/',async (req,res)=>{
     }
 });
 
-module.exports=router;
+module.exports = router;

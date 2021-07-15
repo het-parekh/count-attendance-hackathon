@@ -4,7 +4,6 @@ const router=require('express').Router();
 
 router.post('/',async (req,res)=>{
     const {  Manpower_Names, Designation, Hours_per_day, Activity, Hub, Branch, Region, Vendor} = req.body;
-    console.log(Manpower_Names,Designation,Hours_per_day,Activity,Hub,Branch,Region,Vendor)
     if(Manpower_Names.length<0 || typeof Designation==='undefined' || typeof Hub==='undefined' || typeof Branch==='undefined' || typeof Region==='undefined' || typeof Activity ==='undefined'
       ||  Designation==='' || Hub==='' || Branch==='' || Region==='' || Activity==='' || Vendor===''){
        return res.status(403).send({"error":"please provide all the information"});

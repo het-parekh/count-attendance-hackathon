@@ -1,5 +1,10 @@
 const mongoose = require("mongoose");
-const info_table = require("../models/info.model");
+const tokens = require("../models/blacklistedtoken");
+const User = require("../models/user.model");
+const bcrypt =require('bcrypt');
+const crypto = require('crypto');
+const sendmail = require('./sendMail');
+const passwordschema = require('./passwordvalidator');
 mongoose.connect(process.env.URI, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
@@ -94,3 +99,104 @@ mongoose.connect(process.env.URI, {
 		}
 	}
 );
+
+async function forgetPassword(email) {
+	user = await User.findOne({ email: email });
+	if (user == null) throw "a user with that email doesn't exist";
+	else {
+		let token = crypto.randomBytes(16).toString("hex");
+		user.resetPasswordToken = token;
+		user.resetPasswordExpires = new Date();
+		user.save(function (err) {
+			if (err) console.log(err);
+		});
+		data = {
+			email: user.email,
+			link: process.env.FRONTEND + "/resetPassword/" + token
+		};
+		sendmail(data, "forgetPassword");
+		console.log(data);
+		return "details to reset password has been mailed to this email please check your inbox";
+	}
+}
+
+async function resetPassword(token, newPassword) {
+	user = await User.findOne({ resetPasswordToken: token });
+	if (user == null) throw "invalid Token";
+	now = new Date();
+	if (now - user.resetPasswordExpires > 10 * 60 * 1000) throw "token Expired";
+	istrue = await passwordschema.validate(newPassword, { list: true });
+	console.log(istrue);
+	if (istrue.length > 0) {
+		msg = []
+		istrue.forEach(element => {
+			if (element === "min") msg.push("password must contain min 8 characters")
+			if (element === "max") msg.push("password must be less then 100 characters")
+			if (element === "uppercase") msg.push("password must have uppercase latters")
+			if (element === "lowercase") msg.push("password must have lowercase latters")
+			if (element === "digits") msg.push("password must contain atleast 1 number")
+			if (element === "spaces") msg.push("password Should not have spaces")
+		});
+		throw msg;
+	}
+	const hash = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10));
+	user.password = hash;
+	user.resetPasswordToken = null;
+	user.resetPasswordExpires = null;
+	await user.save();
+	return "password changed succsessfully";
+}
+
+async function addNewUserToDatabase(val){
+    var user=User();
+    const password=makePassword(8);
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(password, salt);
+    user.first_name=val.first_name.trim(),
+    user.last_name=val.last_name.trim(),
+    user.email=val.email.trim(),
+    user.password=hash;
+    user.gender= typeof val.gender!="undefined" ? val.gender:"Male",
+    user.role= typeof val.type!="undefined" ? val.role:"User"
+try {
+    return await user.save();	
+} catch (error) {
+    throw error;
+    }
+}
+
+async function DeleteById(model,Id){
+	try {
+		deleted=await model.deleteMany({ _id:{ $in:Id}});
+		return deleted
+	} catch (error) {
+		console.log(error);
+		throw error;
+	}
+}
+
+function makePassword(length) {
+	var result = "";
+	var characters =
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	var charactersLength = characters.length;
+	for (var i = 0; i < length; i++) {
+	result += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+	return result;
+}
+
+function blaclist_Tokens(Iat,token){
+    var newlist=tokens();
+    newlist.token=token;
+    newlist.createdAt=new Date(Iat*1000).constructor();
+    newlist.save();
+}
+
+module.exports= {
+	forgetPassword:forgetPassword,
+	resetPassword:resetPassword,
+    addNewUserToDatabase:addNewUserToDatabase,
+    DeleteById:DeleteById,
+    blaclist_Tokens:blaclist_Tokens
+};

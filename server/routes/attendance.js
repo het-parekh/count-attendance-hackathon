@@ -57,8 +57,7 @@ router.post('/:id', async (req, res) => {
         $set: { "attendances.$.OT_hours": req.body.OT_hours }
     };
     try {
-        attendance_day = await attendance.updateOne(query, updateDocument);
-        console.log(updateDocument, 'adkfjafkjdf;k')
+        attendance_day= await attendance.update(query,updateDocument);  
         res.status(200).send(attendance_day);
     } catch (error) {
         console.log(error);

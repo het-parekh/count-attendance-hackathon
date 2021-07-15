@@ -1,14 +1,16 @@
 const express = require("express");
 const app = express();
-
+const user= require('./routes/user');
 const db = require('./controllers/dbm');
 const manpower = require('./routes/hiredmanpower');
 const attendance = require('./routes/attendance');
 const info_table= require('./routes/infotable');
 const venodor=require('./routes/vendor');
 const invoice=require('./routes/invoice');
+const passport = require('passport');
 const cors = require('cors');
-
+require('./controllers/passportConfig');
+const cookieParser = require('cookie-parser');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -16,6 +18,11 @@ app.use(cors({
 	origin: process.env.FRONTEND,
 	credentials: true
 }));
+
+app.use(cookieParser());
+app.use(passport.initialize());
+
+app.use('/user',user);
 app.use('/invoice',invoice);
 app.use('/vendor',venodor);
 app.use('/infotable',info_table);

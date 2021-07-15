@@ -10,6 +10,7 @@ import CreateInvoice from './Invoice/CreateInvoice';
 import Bill from './Bill/Bill';
 import Login from './Auth/Login';
 import AddUser from './Auth/AddUser';
+import CreateVendor from './CreateVendor/CreateVendor';
 
 const mapStateToProps = state => {
     return {
@@ -42,20 +43,21 @@ class Main extends Component {
         };
 
         return (
-            <div>               
-                <Switch>  
+            <div>
+                <Switch>
 
                     <Route exact path="/" >
                         <Redirect to="/" />
                     </Route>
-                    <Route exact path = '/login' component = {Login}></Route>
-                    <Route exact path = '/adduser' component = {AddUser}></Route>
-                    <Route exact path = '/dashboard' component = {Dashboard}></Route>
-                    <Route exact path = '/attendance' component = {Attendance}></Route>
-                    <Route exact path = '/createinvoice' component = {CreateInvoice}></Route>
-                    <Route exact path = '/billdetails' component = {Bill}></Route>
-                    <Route component = {PageNotFound}></Route>
-                    
+                    <Route exact path='/login' component={Login}></Route>
+                    <Route exact path='/adduser' component={AddUser}></Route>
+                    <Route exact path='/dashboard' component={Dashboard}></Route>
+                    <Route exact path='/attendance' component={Attendance}></Route>
+                    <Route exact path='/createinvoice' component={CreateInvoice}></Route>
+                    <Route exact path='/billdetails' component={Bill}></Route>
+                    <Route exact path="/createvendor" component={CreateVendor} />
+                    <Route component={PageNotFound}></Route>
+
                 </Switch>
             </div>
         )

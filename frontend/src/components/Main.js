@@ -8,6 +8,8 @@ import Dashboard from './Dashboard/Dashboard'
 import Attendance from './Attendance/Attendance';
 import CreateInvoice from './Invoice/CreateInvoice';
 import Bill from './Bill/Bill';
+import Login from './Auth/Login';
+import AddUser from './Auth/AddUser';
 
 const mapStateToProps = state => {
     return {
@@ -46,6 +48,8 @@ class Main extends Component {
                     <Route exact path="/" >
                         <Redirect to="/" />
                     </Route>
+                    <Route exact path = '/login' component = {Login}></Route>
+                    <Route exact path = '/adduser' component = {AddUser}></Route>
                     <Route exact path = '/dashboard' component = {Dashboard}></Route>
                     <Route exact path = '/attendance' component = {Attendance}></Route>
                     <Route exact path = '/createinvoice' component = {CreateInvoice}></Route>

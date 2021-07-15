@@ -3,7 +3,7 @@ import { TextField,Button,MenuItem,IconButton ,Typography} from '@material-ui/co
 import { AppBar,Toolbar} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {SystemUpdateAlt} from '@material-ui/icons';
-import Collapse from '@material-ui/core/Slide';
+import Collapse from '@material-ui/core/Collapse';
 import  Paper  from '@material-ui/core/Paper';
 
 
@@ -45,6 +45,7 @@ export default function Bill(){
                 </Typography>
                 </Toolbar>
             </AppBar> 
+            <div>
                 <Collapse  in={showBillHistory}>
                     <Paper>
                         <Typography align="center" variant="h6" className={classes.title}>
@@ -52,6 +53,7 @@ export default function Bill(){
                         </Typography>
                     </Paper> 
                 </Collapse>             
+            </div>
         </div>
     );
 }

@@ -3,15 +3,15 @@ const invoice = require('../models/invoice.model');
 const router=require('express').Router();
 
 router.post('/',async (req,res)=>{
-    const {  Manpower_Names, Designation, Hours_per_day, Activity, Hub, Branch, Region, Vendor} = req.body;
-    if(Manpower_Names.length<0 || typeof Designation==='undefined' || typeof Hub==='undefined' || typeof Branch==='undefined' || typeof Region==='undefined' || typeof Activity ==='undefined'
-      ||  Designation==='' || Hub==='' || Branch==='' || Region==='' || Activity==='' || Vendor===''){
+    const {  Manpower_Names, Hours_per_day, Activity, Hub, Branch, Region, Vendor} = req.body;
+    console.log(Manpower_Names, Hours_per_day, Activity, Hub, Branch, Region, Vendor)
+    if(Manpower_Names.length<0 || typeof Hub==='undefined' || typeof Branch==='undefined' || typeof Region==='undefined' || typeof Activity ==='undefined'
+      || Hub==='' || Branch==='' || Region==='' || Activity==='' || Vendor===''){
        return res.status(403).send({"error":"please provide all the information"});
     }
     try {
         let new_invoice= invoice();
            new_invoice.Manpower_Names=Manpower_Names,
-           new_invoice.Designation=Designation.trim(),
            new_invoice.Hub=Hub.trim(), 
            new_invoice.Branch=Branch.trim(),
            new_invoice.Region=Region.trim(),

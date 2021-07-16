@@ -232,7 +232,7 @@ async function Update_Bill() {
         if (bill) {
             let total = 0;
             element.invoice.Manpower_Names.forEach((i, index) => {
-                bill.number_of_employees[index].amount += sla_map[i.type.toUpperCase().trim()] * getTimeDiffrence(element.In_time, element.Out_time) * element.OT_hours;
+                bill.number_of_employees[index].amount += sla_map[i.designation.toUpperCase().trim()] * getTimeDiffrence(element.In_time, element.Out_time) * element.OT_hours;
                 total += bill.number_of_employees[index].amount;
             });
             bill.total_cost = total;
@@ -248,7 +248,7 @@ async function Update_Bill() {
                 /* console.log(i); */
                 let newperson = {
                     Name: i.Name,
-                    amount: sla_map[i.type.toUpperCase().trim()] * getTimeDiffrence(element.In_time, element.Out_time) * element.OT_hours
+                    amount: sla_map[i.designation.toUpperCase().trim()] * getTimeDiffrence(element.In_time, element.Out_time) * element.OT_hours
                 }
                 total += newperson.amount;
                 number_of_employees.push(newperson);

@@ -71,8 +71,8 @@ function CreateVendor() {
         <TextField required id="standard-required" label="Gunmen Price per hour" type="text" name="gunmen" onChange={gunmenPriceChangeHandler} value={gunmenPrice} />
         <TextField required id="standard-required" label="Driver Price per hour" type="text" name="gunmen" onChange={driverPriceChangeHandler} value={driverPrice} />
         <TextField required id="standard-required" label="Vehicle Price per hour" type="text" name="gunmen" onChange={vehiclePriceChangeHandler} value={vehiclePrice} />
-        <TextField required id="standard-required" label="Driver OT price per hour" type="text" name="gunmen" onChange={gunmenOtPriceHandler} value={gunmenOtPrice} />
-        <TextField required id="standard-required" label="Gunman OT price per hour" type="text" name="gunmen" onChange={driverOtPriceChangeHandler} value={driverOtPrice} />
+        <TextField required id="standard-required" label="Gunman OT price per hour" type="text" name="gunmen" onChange={gunmenOtPriceHandler} value={gunmenOtPrice} />
+        <TextField required id="standard-required" label="Driver OT price per hour" type="text" name="gunmen" onChange={driverOtPriceChangeHandler} value={driverOtPrice} />
         <TextField required id="standard-required" label="Vehicle OT price per hour" type="text" name="gunmen" onChange={vehicleOtPriceChangeHandler} value={vehicleOtPrice} />
 
 

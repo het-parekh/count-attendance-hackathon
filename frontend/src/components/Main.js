@@ -57,9 +57,6 @@ class Main extends Component {
             <div>
                 <Switch>
 
-                    <Route exact path="/" >
-                        <Redirect to="/" />
-                    </Route>
                     <PublicRoute exact path = '/login' component = {() => <Login  Auth={this.props.Auth} LoginUser={this.props.LoginUser} />}></PublicRoute>
                     <PrivateRoute exact path = '/adduser' component = {AddUser}></PrivateRoute>
                     <PrivateRoute exact path = '/dashboard' component = {Dashboard}></PrivateRoute>

@@ -21,11 +21,12 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-
+import axios from 'axios'
 
 const useStyles = makeStyles((theme) => ({
     root:{
-      backgroundImage:"linear-gradient(to right,#00ccff,#1a75ff)"
+      backgroundImage:"linear-gradient(to right,#00ccff,#1a75ff)",
+      marginTop:"-60px!important"
     },
     grid:{
       padding:80
@@ -136,6 +137,7 @@ const useStyles = makeStyles((theme) => ({
       const [toggleTime,setToggleTime] = useState(true)
       const [toggleSelectWorkforce,setToggleSelectWorkforce] = useState("Gunmen")
       const [toggleSelectYear,setToggleSelectYear] = useState("2021")
+      const [dailyAttendance,setDailyAttendance] = useState({Gunmen:0,Driver:0,Vehicle:0})
 
       const pie_gunmen = {
         labels:['Attended','Not Attended'],
@@ -148,6 +150,16 @@ const useStyles = makeStyles((theme) => ({
       const bar_opts = {}
       const pie_drivers = useState()
       const pie_vehicles = useState()
+
+      useEffect(() => {
+        axios.get('attendance/'+new Date().toISOString().slice(0, 10))
+        .then(res => {
+          res.data.forEach((manpower) => {
+            setDailyAttendance({...dailyAttendance,[manpower.designation]:((prev) => prev + manpower.present_employee.length)})
+          
+          })
+        })
+      },[])
 
       function OnToggleTime(val){
         val == 'today'?setToggleTime(true):setToggleTime(false)

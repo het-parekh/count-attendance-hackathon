@@ -9,8 +9,10 @@ function CreateVendor() {
   const [regionName, setRegionName] = useState('')
   const [gunmenPrice, setGunmenPrice] = useState('')
   const [driverPrice, setDriverPrice] = useState('')
+  const [vehiclePrice, setVehiclePrice] = useState('')
   const [gunmenOtPrice, setGunmenOtPrice] = useState('')
   const [driverOtPrice, setDriverOtPrice] = useState('')
+  const [vehicleOtPrice, setVehicleOtPrice] = useState('')
 
   const vendorNameChangeHandler = (e) => {
     setVendorName(e.target.value)
@@ -22,6 +24,9 @@ function CreateVendor() {
 
   const gunmenPriceChangeHandler = (e) => {
     setGunmenPrice(e.target.value)
+  }
+  const vehiclePriceChangeHandler = (e) => {
+    setVehiclePrice(e.target.value)
   }
 
   const driverPriceChangeHandler = (e) => {
@@ -35,6 +40,9 @@ function CreateVendor() {
   const driverOtPriceChangeHandler = (e) => {
     setDriverOtPrice(e.target.value)
   }
+  const vehicleOtPriceChangeHandler = (e) => {
+    setVehicleOtPrice(e.target.value)
+  }
 
 
   const submitHandler = (e) => {
@@ -42,14 +50,15 @@ function CreateVendor() {
     const data = {
       vendor_name: vendorName,
       region: regionName,
-      invoice: []
+      sla:{gunman:gunmenPrice,driver:driverPrice,vehicle:vehiclePrice},
+      sla_ot:{gunman:gunmenOtPrice,driver:driverOtPrice,vehicle:vehicleOtPrice}
     }
     axios.post('/vendor', data)
       .then(res => {
         console.log(res)
       })
       .catch(err => {
-        console.log(Error)
+        console.log(err.response)
       })
     console.log('submitted')
   }
@@ -61,8 +70,10 @@ function CreateVendor() {
         <TextField required id="standard-required" label="Region Name" type="text" name="region" onChange={regionNameChangeHandler} value={regionName} />
         <TextField required id="standard-required" label="Gunmen Price per hour" type="text" name="gunmen" onChange={gunmenPriceChangeHandler} value={gunmenPrice} />
         <TextField required id="standard-required" label="Driver Price per hour" type="text" name="gunmen" onChange={driverPriceChangeHandler} value={driverPrice} />
+        <TextField required id="standard-required" label="Vehicle Price per hour" type="text" name="gunmen" onChange={vehiclePriceChangeHandler} value={vehiclePrice} />
         <TextField required id="standard-required" label="Driver OT price per hour" type="text" name="gunmen" onChange={gunmenOtPriceHandler} value={gunmenOtPrice} />
-        <TextField required id="standard-required" label="Gunman OT per hour" type="text" name="gunmen" onChange={driverOtPriceChangeHandler} value={driverOtPrice} />
+        <TextField required id="standard-required" label="Gunman OT price per hour" type="text" name="gunmen" onChange={driverOtPriceChangeHandler} value={driverOtPrice} />
+        <TextField required id="standard-required" label="Vehicle OT price per hour" type="text" name="gunmen" onChange={vehicleOtPriceChangeHandler} value={vehicleOtPrice} />
 
 
 

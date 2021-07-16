@@ -5,6 +5,9 @@ const bcrypt =require('bcrypt');
 const crypto = require('crypto');
 const sendmail = require('./sendMail');
 const passwordschema = require('./passwordvalidator');
+const cron = require('node-cron');
+const attendance = require("../models/attendance.model");
+const Bill = require("../models/bill.model");
 mongoose.connect(process.env.URI, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
@@ -99,6 +102,13 @@ mongoose.connect(process.env.URI, {
 		}
 	}
 );
+
+cron.schedule('0 0 0 * * *', () => {
+    Update_Bill();
+  }, {
+    scheduled: true,
+    timezone: "Asia/Kolkata"
+  });
 
 async function forgetPassword(email) {
 	user = await User.findOne({ email: email });
@@ -197,10 +207,84 @@ function blaclist_Tokens(Iat,token){
     newlist.save();
 }
 
+async function Update_Bill(){
+    var sla_map = {};
+    var slaot_map={};
+    let today=new Date();
+    let yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    let attendance_yesterday= await attendance.find({date:yesterday.toJSON().slice(0,10)}).populate({
+        path:'attendances.invoice',
+        populate: {
+            path: 'Vendor',
+            model:'vendor'
+          }
+    });
+    /* console.log(attendance_yesterday); */
+    attendance_yesterday[0].attendances.forEach(async (element)=>{
+        sla_map["GUNMAN"]=element.invoice.Vendor.sla.gunman;
+        sla_map["DRIVER"]=element.invoice.Vendor.sla.driver;
+        sla_map["VEHICLE"]=element.invoice.Vendor.sla.vehicle;
+        slaot_map["GUNMAN"]=element.invoice.Vendor.sla_ot.gunman;
+        slaot_map["DRIVER"]=element.invoice.Vendor.sla_ot.driver;
+        slaot_map["VEHICLE"]=element.invoice.Vendor.sla_ot.vehicle;
+        let bill= await Bill.findOne({invoice:element.invoice});
+        if(bill){
+            let total=0;
+            element.invoice.Manpower_Names.forEach((i,index)=>{
+                bill.number_of_employees[index].amount+=sla_map[i.type.toUpperCase().trim()]*getTimeDiffrence(element.In_time,element.Out_time)*element.OT_hours;
+                total+=bill.number_of_employees[index].amount;
+            });
+            bill.total_cost=total;
+            await bill.save();
+        }else{
+            let number_of_employees=[];
+            let newBill= Bill();
+            let total=0;
+            newBill.Vendor_ref=element.invoice.Vendor._id;
+            newBill.invoice=element.invoice._id;
+            /* console.log(element.invoice); */
+            element.invoice.Manpower_Names.forEach((i,index)=>{
+                /* console.log(i); */
+                let newperson={
+                    Name:i.Name,
+                    amount:sla_map[i.type.toUpperCase().trim()]*getTimeDiffrence(element.In_time,element.Out_time)*element.OT_hours
+                }
+                total+=newperson.amount;
+                number_of_employees.push(newperson);
+            });
+            newBill.number_of_employees=number_of_employees;
+            newBill.service_month= new Date().getMonth();
+            newBill.base_cost=0
+            newBill.extra_charges=0
+            newBill.total_cost=total
+            await newBill.save();
+        }
+    });
+
+}
+
+add = function(arr) {
+    return arr.reduce((a, b) => a + b, 0);
+};
+ 
+function getTimeDiffrence(intime,outtime){
+    var Intime_hours=intime.split(":");
+    Intime_hours[0]=parseFloat(Intime_hours[0]);
+    Intime_hours[1]=parseFloat(Intime_hours[1])/parseFloat(60);
+   // Intime_hours[2]=parseFloat(Intime_hours[2])/parseFloat(3600);
+    var outtime_hours=outtime.split(":");
+    outtime_hours[0]=parseFloat(outtime_hours[0]);
+    outtime_hours[1]=parseFloat(outtime_hours[1])/parseFloat(60);
+   // outtime_hours[2]=parseFloat(outtime_hours[2])/parseFloat(3600);
+    return add(outtime_hours)-add(Intime_hours);
+}
+
 module.exports= {
 	forgetPassword:forgetPassword,
 	resetPassword:resetPassword,
     addNewUserToDatabase:addNewUserToDatabase,
     DeleteById:DeleteById,
-    blaclist_Tokens:blaclist_Tokens
+    blaclist_Tokens:blaclist_Tokens,
+    Update_Bill:Update_Bill
 };

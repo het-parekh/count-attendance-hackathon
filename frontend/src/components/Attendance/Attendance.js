@@ -140,20 +140,31 @@ function Attendance() {
         let tt = []
         let copy = [...workingTime]
         let copySelectedMan = [...selectedManpower]
-        const todays = res.data[0].attendances.map((one) => {
-          // console.log(workingTime, 'chekc kar raha hu')
-          tt.push(one.invoice._id)
-          for (let it in copy) {
-            if (copy[it].invoice === one.invoice._id) {
-              console.log(one.In_time, one.Out_Time, one.OT_hours)
-              copy[it] = {
-                ...copy[it], inTime: one.In_time, outTime: one.Out_time, otHours: one.OT_hours
-              }
-              copySelectedMan[it] = [...one.present_employee]
+        if (res.data[0]) {
 
+          const todays = res.data[0].attendances.map((one) => {
+            // console.log(workingTime, 'chekc kar raha hu')
+            tt.push(one.invoice._id)
+            for (let it in copy) {
+              if (copy[it].invoice === one.invoice._id) {
+                console.log(one.In_time, one.Out_Time, one.OT_hours)
+                copy[it] = {
+                  ...copy[it], inTime: one.In_time, outTime: one.Out_time, otHours: one.OT_hours
+                }
+                console.log(one.present_employee, 'adfkafakfd')
+                const buf = []
+                one.present_employee.forEach((single) => {
+                  console.log(single.na, 'dkfjadkfdjafjk')
+                  buf.push(`${single.name} ${single.type}`)
+
+                })
+                console.log(buf, 'adkfjafkjsakj')
+                copySelectedMan[it] = [...buf]
+
+              }
             }
-          }
-        })
+          })
+        }
         setSelectedManpower([...copySelectedMan])
         setWorkingTime([...copy])
         setTodayAttendance([...tt])
@@ -215,9 +226,20 @@ function Attendance() {
 
 
   const submitHandler = (e, id, working, manpowerOneArr) => {
+    console.log(manpowerOneArr, 'submitted')
+    const present_employeeArr = []
+    manpowerOneArr.forEach((each) => {
+      const splitted = each.split(' ')
+      let name = splitted[0]
+      if (splitted.length === 3) {
+        name = splitted[0] + " " + splitted[1]
+      }
+      present_employeeArr.push({ name: name, type: splitted[splitted.length - 1] })
+    })
+    console.log(present_employeeArr, 'submitted')
     const data = {
       invoice: id,
-      present_employee: [...manpowerOneArr],
+      present_employee: [...present_employeeArr],
       OT_hours: working.otHours,
       In_time: working.inTime,
       Out_time: working.outTime
@@ -240,14 +262,17 @@ function Attendance() {
     const namearr = e.target.name.split('#')
     let copy = [...selectedManpower]
     const ii = copy[outerI].indexOf(namearr[0])
+    console.log(namearr)
     if (namearr[1] === "false") {
       copy[outerI].push(namearr[0])
-      console.log(copy)
+      console.log(copy, 'if ma hu')
     } else {
       copy[outerI].splice(ii, 1)
-      console.log(copy)
+      console.log(copy, 'else mai hu')
     }
-    console.log(e.target.checked)
+    // console.log(e.target.checked)
+    console.log(copy, 'dkeho new hai')
+    // console.log(copy[outerI].includes(namearr[0]))
     setSelectedManpower([...copy])
     // console.log(selectedManpower, 'kya baat hai')
   }
@@ -273,8 +298,7 @@ function Attendance() {
           <Table >
             <TableHead>
               <TableRow>
-                <StyledTableCell>Vendor Name</StyledTableCell>
-                <StyledTableCell>designation</StyledTableCell>
+                <StyledTableCell>Vendor Id</StyledTableCell>
                 <StyledTableCell>Activity</StyledTableCell>
                 <StyledTableCell>Employee Names</StyledTableCell>
                 <StyledTableCell>Assigned Hours</StyledTableCell>
@@ -291,11 +315,7 @@ function Attendance() {
 
                   <StyledTableRow key={"row" + index}>
                     <StyledTableCell key={"someId" + index}>
-                      {row._id}
-                    </StyledTableCell>
-
-                    <StyledTableCell key={"designation" + index}>
-                      {row.Designation}
+                      {row.Vendor}
                     </StyledTableCell>
                     <StyledTableCell key={"activity" + index}>
                       {row.Activity}
@@ -305,14 +325,14 @@ function Attendance() {
                         <div style={{ display: 'flex', alignItems: 'center', height: '24px' }} key={"containManpower" + i}>
                           <Checkbox
                             key={"checkbox" + i}
-                            checked={selectedManpower[index] ? selectedManpower[index].includes(man) : false}
+                            checked={selectedManpower[index] ? selectedManpower[index].includes(man.name + " " + man.type) : false}
                             classes={{ checked: classes.checkColor }}
                             inputProps={{ 'aria-labelledby': labelId }}
-                            name={`${man}#${selectedManpower[index] ? selectedManpower[index].includes(man) : null}`}
+                            name={`${man.name} ${man.type}#${selectedManpower[index] ? selectedManpower[index].includes(man.name + " " + man.type) : null}`}
                             disabled={todayAttendance.includes(row._id)}
                             onChange={(e) => manPowerSelectHanlder(e, index)}
                           />
-                          <span key={"displayNames + i"} style={{ whiteSpace: 'nowrap' }}>{man}</span>
+                          <span key={"displayNames + i"} style={{ whiteSpace: 'nowrap' }}>{man.name}&nbsp; ({man.type})</span>
                         </div>
                       )) : ''}
 

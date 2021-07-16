@@ -46,7 +46,7 @@ export default function CreateInvoice(){
     const [flash,setFlash]  = useState("")
     const [vendorArr,setVendorArr]  = useState()
     const [vendor,setVendor]  = useState({id:'',name:''})
-    const [manpowerArr,setManpowerArr] = useState({designation : "Gunman",names:[""]})
+    const [manpowerArr,setManpowerArr] = useState([{"designation" : "Gunman","name":""}])
     const [info,setInfo] = useState({activity:"",hours:"",vendor_id:""})
     const [err,setErr] = useState({activity:"",hours:""})
     const [userInfo,setUserInfo] = useState({region:"",branch:"",hub:""})
@@ -75,23 +75,20 @@ export default function CreateInvoice(){
     }
 
     function changeManpower(e){
-        if(e.target.name == "designation"){
-            setManpowerArr({...manpowerArr,designation:e.target.value}) 
-        }
-        else{
-            let index = e.target.name.split("#")[0]
-            let temp = manpowerArr.names
-            temp[index] = e.target.value
-            setManpowerArr({...manpowerArr,names:temp})
-        }
+        let type = e.target.name.split("#")[1]
+        let index = e.target.name.split("#")[0]
+        let value = e.target.value
+        let temp = [...manpowerArr]
+        temp[index] = {...manpowerArr[index],[type] : value}
+        setManpowerArr(temp)
     }
     function deleteManpower(e){
         let val = e.currentTarget.value
-        setManpowerArr({...manpowerArr,names:manpowerArr.names.filter((names,index) => index != Number(val)) })
+        setManpowerArr(manpowerArr.filter((manpower,index) => index != Number(val)) )
     }
 
     function addManpower(){
-        setManpowerArr({...manpowerArr,names:[...manpowerArr.names,""] })
+        setManpowerArr([...manpowerArr,{"designation" : "Gunman","name":""} ])
     }
 
     function handleSubmit(){
@@ -105,8 +102,7 @@ export default function CreateInvoice(){
             console.log("success")
             console.log(manpowerArr)
             let data = {
-                Manpower_Names:manpowerArr.names,
-                Designation:manpowerArr.designation,
+                Manpower_Names:manpowerArr,
                 Hours_per_day:info.hours,
                 Activity:info.activity,
                 Hub:userInfo.hub,
@@ -119,7 +115,7 @@ export default function CreateInvoice(){
             .then(res => {
                 console.log("create success",res)
                 setVendor({id:'',name:''})
-                setManpowerArr({designation : "Gunman",names:[""]})
+                setManpowerArr([{designation : "Gunman",name:""}])
                 setInfo({activity:"",hours:"",vendor_id:""})
                 setErr({activity:"",hours:""})
 
@@ -213,39 +209,37 @@ export default function CreateInvoice(){
                 </TextField>
             </div>
 
-            <div>
-                <TextField key = {"manpowerDesignation"} 
-                                select
-                                name = {"designation"}
-                                label = "Provide designation"
-                                value={manpowerArr.designation}
-                                defaultValue={manpowerArr.designation}
-                                onChange={changeManpower}
-                            >
-                    <MenuItem key={"Gunman"} value="Gunman">Gunman</MenuItem>
-                    <MenuItem key={"Driver"} value="Driver">Driver</MenuItem>
-                    <MenuItem key={"Vehicle"} value="Vehicle">Vehicle</MenuItem>
-                </TextField>
-            </div>
             </center>
             </div>
 
             <div>
             <h3 style={{marginBottom:"-15px"}}>Add Manpower <IconButton component="label" onClick={addManpower}><AddCircle style={{color:"limegreen"}}/></IconButton></h3>
-            {manpowerArr.names.map((name,index) => (
+            {manpowerArr.map((manpower,index) => (
                     <div key = {"manpower" + index}>
-                        <TextField key = {"manpowerName" + index} 
-                            name = {index+"#name"}
-                            type="text"
-                            label = "Enter Name"
-                            value = {name}
-                            defaultValue = {name}
-                            onChange={changeManpower}
-                        >
-                        </TextField>
-                        {manpowerArr.names.length > 1?
-                        <IconButton style = {{color:"red",marginTop:"10px"}} value = {index} onClick={deleteManpower}><HighlightOff /></IconButton>
-                        :<div></div>}
+                    <TextField key = {"manpowerName" + index} 
+                        name = {index+"#name"}
+                        type="text"
+                        label = "Enter Name"
+                        value = {manpower.name}
+                        defaultValue = {manpower.name}
+                        onChange={changeManpower}
+                    >
+                    </TextField>
+                    <TextField key = {"manpowerDesignation" + index} 
+                        select
+                        name = {index+"#designation"}
+                        label = "Provide designation"
+                        value={manpower.designation}
+                        defaultValue={manpower.designation}
+                        onChange={changeManpower}
+                    >
+                        <MenuItem key={"Gunman"} value="Gunman">Gunman</MenuItem>
+                        <MenuItem key={"Driver"} value="Driver">Driver</MenuItem>
+                        <MenuItem key={"Vehicle"} value="Vehicle">Vehicle</MenuItem>
+                    </TextField>
+                    {manpowerArr.length > 1?
+                    <IconButton style = {{color:"red",marginTop:"10px"}} value = {index} onClick={deleteManpower}><HighlightOff /></IconButton>
+                    :<div></div>}
                     </div>
             ))}
             <div align="center">

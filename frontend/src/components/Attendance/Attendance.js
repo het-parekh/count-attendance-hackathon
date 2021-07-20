@@ -214,7 +214,7 @@ function Attendance() {
         const minOt = +(min / 60).toFixed(2)
         const ot = +hrs + minOt
         const othours = (ot - hours_per_day).toFixed(2)
-        copy[index] = { ...workingTime[index], [field]: e.target.value, outTime: e.target.value, otHours: othours }
+        copy[index] = { ...workingTime[index], [field]: e.target.value, outTime: e.target.value, otHours: othours < 0 ? 0 : othours }
       }
     }
     if (field === 'inTime') {

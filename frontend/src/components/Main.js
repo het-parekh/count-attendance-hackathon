@@ -13,6 +13,7 @@ import Login from './Auth/Login';
 import AddUser from './Auth/AddUser';
 import Loading from './Loading'
 import CreateVendor from './CreateVendor/CreateVendor';
+import CheckAttedance from './Attendance/checkAttendance';
 
 const mapStateToProps = state => {
     return {
@@ -58,20 +59,20 @@ class Main extends Component {
                 <Switch>
 
                     <PublicRoute exact path = '/login' component = {() => <Login  Auth={this.props.Auth} LoginUser={this.props.LoginUser} />}></PublicRoute>
+                    
                     <PrivateRoute exact path = '/adduser' component = {AddUser}></PrivateRoute>
                     <PrivateRoute exact path = '/dashboard' component = {Dashboard}></PrivateRoute>
                     <PrivateRoute exact path = '/attendance' component = {Attendance}></PrivateRoute>
+                    <PrivateRoute exact path = '/checkattendance' component = {CheckAttedance}></PrivateRoute>
                     <PrivateRoute exact path = '/createinvoice' component = {CreateInvoice}></PrivateRoute>
                     <PrivateRoute exact path = '/billdetails' component = {Bill}></PrivateRoute>
                     <PrivateRoute exact path = '/createvendor' component={CreateVendor} />
+                    
                     <Route exact path="/" >
                             <Redirect to="/login" />
                     </Route>
-
                     <Route component = {PageNotFound}></Route>
 
-
-                    
                 </Switch>
             </div>
         )

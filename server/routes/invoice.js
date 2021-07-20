@@ -28,7 +28,7 @@ router.post('/',async (req,res)=>{
 
 router.get('/', async(req,res)=>{
     try {
-        let result= await invoice.find();
+        let result= await invoice.find().populate('Vendor');
         return res.status(200).send(result);
     } catch (error) {
         res.status(500).send();

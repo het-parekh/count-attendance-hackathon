@@ -213,14 +213,13 @@ async function Update_Bill() {
     let today = new Date();
     let yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
-    let attendance_yesterday = await attendance.find({ date: today.toJSON().slice(0, 10) }).populate({
+    let attendance_yesterday = await attendance.find({ date: yesterday.toJSON().slice(0, 10) }).populate({
         path: 'attendances.invoice',
         populate: {
             path: 'Vendor',
             model: 'vendor'
         }
     });
-    console.log(attendance_yesterday);
     attendance_yesterday[0].attendances.forEach(async (element)=>{
         sla_map["GUNMAN"]=element.invoice.Vendor.sla.gunman;
         sla_map["DRIVER"]=element.invoice.Vendor.sla.driver;

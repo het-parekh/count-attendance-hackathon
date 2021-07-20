@@ -11,8 +11,12 @@ const bill_Schema= new mongoose.Schema({
     	base_cost:{type:Number},		
     	extra_charges:{type:Number},	
     	total_cost:{type:Number}
-            
-});
+        
+	},
+	{
+		timestamps: true
+	}
+);
 
 const bill = mongoose.model('bill',bill_Schema);
 module.exports  = bill;

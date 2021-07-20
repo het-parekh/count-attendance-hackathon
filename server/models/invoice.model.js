@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const invoice_Schema = new mongoose.Schema({
-	Manpower_Names: [{ name: { type: String }, designation: { type: String } }],
+	Manpower_Names: [{ name: { type: String }, type: { type: String } }],
 	Hub: { type: String },
 	Branch: { type: String },
 	Region: { type: String },

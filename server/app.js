@@ -4,6 +4,7 @@ const user= require('./routes/user');
 const db = require('./controllers/dbm');
 const manpower = require('./routes/hiredmanpower');
 const attendance = require('./routes/attendance');
+const bill = require('./routes/bill');
 const info_table= require('./routes/infotable');
 const vendor=require('./routes/vendor');
 const invoice=require('./routes/invoice');
@@ -27,6 +28,7 @@ app.use('/invoice',invoice);
 app.use('/vendor',vendor);
 app.use('/infotable',info_table);
 app.use('/attendance', attendance);
+app.use('/Bill', bill);
 app.use('/manpower', manpower);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

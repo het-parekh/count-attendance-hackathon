@@ -14,12 +14,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 
-import { FormControl, MenuItem } from '@material-ui/core';
-import { InputLabel } from '@material-ui/core';
-import { Select } from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
 import './Attendance.css'
-import { v4 } from 'uuid'
 
 const StyledTableCell = withStyles((theme) => ({
   head: {

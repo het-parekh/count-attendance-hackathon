@@ -104,7 +104,7 @@ mongoose.connect(process.env.URI, {
 );
 
 cron.schedule('0 0 0 * * *', () => {
-    Update_Bill();
+    Update_Bill();  
 }, {
     scheduled: true,
     timezone: "Asia/Kolkata"
@@ -220,47 +220,50 @@ async function Update_Bill() {
             model: 'vendor'
         }
     });
-    /* console.log(attendance_yesterday); */
-    attendance_yesterday[0].attendances.forEach(async (element) => {
-        sla_map["GUNMAN"] = element.invoice.Vendor.sla.gunman;
-        sla_map["DRIVER"] = element.invoice.Vendor.sla.driver;
-        sla_map["VEHICLE"] = element.invoice.Vendor.sla.vehicle;
-        slaot_map["GUNMAN"] = element.invoice.Vendor.sla_ot.gunman;
-        slaot_map["DRIVER"] = element.invoice.Vendor.sla_ot.driver;
-        slaot_map["VEHICLE"] = element.invoice.Vendor.sla_ot.vehicle;
-        let bill = await Bill.findOne({ invoice: element.invoice });
-        if (bill) {
-            let total = 0;
-            element.invoice.Manpower_Names.forEach((i, index) => {
-                bill.number_of_employees[index].amount += sla_map[i.designation.toUpperCase().trim()] * getTimeDiffrence(element.In_time, element.Out_time) * element.OT_hours;
-                total += bill.number_of_employees[index].amount;
-            });
-            bill.total_cost = total;
-            await bill.save();
-        } else {
-            let number_of_employees = [];
-            let newBill = Bill();
-            let total = 0;
-            newBill.Vendor_ref = element.invoice.Vendor._id;
-            newBill.invoice = element.invoice._id;
-            /* console.log(element.invoice); */
-            element.invoice.Manpower_Names.forEach((i, index) => {
-                /* console.log(i); */
-                let newperson = {
-                    Name: i.Name,
-                    amount: sla_map[i.designation.toUpperCase().trim()] * getTimeDiffrence(element.In_time, element.Out_time) * element.OT_hours
-                }
-                total += newperson.amount;
-                number_of_employees.push(newperson);
-            });
-            newBill.number_of_employees = number_of_employees;
-            newBill.service_month = new Date().getMonth();
-            newBill.base_cost = 0
-            newBill.extra_charges = 0
-            newBill.total_cost = total
-            await newBill.save();
-        }
-    });
+    if(attendance_yesterday){
+        attendance_yesterday[0].attendances.forEach(async (element)=>{
+            sla_map["GUNMAN"]=element.invoice.Vendor.sla.gunman;
+            sla_map["DRIVER"]=element.invoice.Vendor.sla.driver;
+            sla_map["VEHICLE"]=element.invoice.Vendor.sla.vehicle;
+            slaot_map["GUNMAN"]=element.invoice.Vendor.sla_ot.gunman;
+            slaot_map["DRIVER"]=element.invoice.Vendor.sla_ot.driver;
+            slaot_map["VEHICLE"]=element.invoice.Vendor.sla_ot.vehicle;
+            let bill= await Bill.findOne({invoice:element.invoice});
+            if(bill){
+                let total=0;
+                element.invoice.Manpower_Names.forEach((i,index)=>{
+                    bill.number_of_employees[index].amount+=sla_map[i.type.toUpperCase().trim()]*getTimeDiffrence(element.In_time,element.Out_time)+ sla_map[i.type.toUpperCase().trim()]*element.OT_hours;
+                    total+=bill.number_of_employees[index].amount;
+                });
+                bill.total_cost = total;
+                await bill.save();
+            } else {
+                let number_of_employees = [];
+                let newBill = Bill();
+                let total = 0;
+                newBill.Vendor_ref = element.invoice.Vendor._id;
+                newBill.invoice = element.invoice._id;
+                /* console.log(element.invoice); */
+                element.invoice.Manpower_Names.forEach((i, index) => {
+                    console.log(i.type);
+                    let newperson={
+                        Name:i.name,
+                        amount:sla_map[i.type.toUpperCase().trim()]*getTimeDiffrence(element.In_time,element.Out_time)+ sla_map[i.type.toUpperCase().trim()]*element.OT_hours
+                    }
+                    total += newperson.amount;
+                    number_of_employees.push(newperson);
+                });
+                newBill.number_of_employees = number_of_employees;
+                newBill.service_month = new Date().getMonth()+1;
+                newBill.base_cost = 0
+                newBill.extra_charges = 0
+                newBill.total_cost = total
+                await newBill.save();
+            }
+        });
+    }else{
+        return;
+    }
 
 }
 

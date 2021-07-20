@@ -245,7 +245,6 @@ async function Update_Bill() {
                 newBill.invoice = element.invoice._id;
                 /* console.log(element.invoice); */
                 element.invoice.Manpower_Names.forEach((i, index) => {
-                    console.log(i.type);
                     let newperson={
                         Name:i.name,
                         amount:sla_map[i.type.toUpperCase().trim()]*getTimeDiffrence(element.In_time,element.Out_time)+ sla_map[i.type.toUpperCase().trim()]*element.OT_hours

@@ -310,7 +310,7 @@ function Attendance() {
 
                   <StyledTableRow key={"row" + index}>
                     <StyledTableCell key={"someId" + index}>
-                      {row.Vendor}
+                      {row.Vendor ? row.Vendor.vendor_name : null}
                     </StyledTableCell>
                     <StyledTableCell key={"activity" + index}>
                       {row.Activity}

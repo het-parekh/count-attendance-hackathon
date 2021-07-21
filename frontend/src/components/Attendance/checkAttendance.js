@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState ,useLayoutEffect} from 'react';
 import { TextField, Button, MenuItem, IconButton, Typography } from '@material-ui/core';
 import clsx from 'clsx';
 import { DataGrid,GridToolbarContainer,GridToolbarExport} from '@material-ui/data-grid';
@@ -57,15 +57,17 @@ export default function CheckAttedance() {
     const [colsFull,setColsFull] = useState([])
     const [view,setView] = useState('invoice')
     const [openInvoiceID,setOpenInvoiceID] = useState()
+    const [drop_month,setMonth] = useState((new Date()).toLocaleString('default', { month: 'long' }))
+    const [months,setMonths] = useState(['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'])
 
     useEffect(() => {
         let currentDate = new Date()
-        let [month , year] = [currentDate.getMonth()+1,currentDate.getFullYear()]
+        let [month , year] = [months.indexOf(drop_month)+1,currentDate.getFullYear()]
         let numberOfDays = new Date(year, month, 0).getDate()
         let temp = []
         temp.push({"field":"name",headerName:"Name",width:150})
         temp.push({"field":"designation",headerName:"Designation",width:160})
-        let month_long = currentDate.toLocaleString('default', { month: 'long' })
+        let month_long = currentDate.toLocaleString('default', { month: 'short' })
         for(let i = 1 ; i<=numberOfDays ; i++){
             let date = i.toString().length < 2?'0'+i:i
             let month_no = month.toString().length < 2?'0'+month:month
@@ -85,17 +87,24 @@ export default function CheckAttedance() {
             ...temp
         ])
         //call to vendor for current month
-         axios.get('/attendance/all')
-         .then(res => {
-            let  temp = {}
-            res.data.forEach((Allattendance) => {
-                Allattendance.attendances.forEach((attendance) => {
-                    temp[attendance.invoice._id] = {...temp[attendance.invoice._id],"invoice_details":attendance.invoice,"open":false,[Allattendance.date]:{"present_employees":attendance.present_employee,"ot_hours":attendance.OT_hours}}
-                })
-            })
-            setAttendanceByInvoice(temp)
-         })
-    }, [])
+
+    }, [drop_month])
+
+    useLayoutEffect(() => {
+        if(!cols.length>0){
+            return
+        }
+        axios.get(`/attendance/${cols['2'].field}/${cols[String(cols.length-1)].field}`)
+        .then(res => {
+           let  temp = {}
+           res.data.forEach((Allattendance) => {
+               Allattendance.attendances.forEach((attendance) => {
+                   temp[attendance.invoice._id] = {...temp[attendance.invoice._id],"invoice_details":attendance.invoice,"open":false,[Allattendance.date]:{"present_employees":attendance.present_employee,"ot_hours":attendance.OT_hours}}
+               })
+           })
+           setAttendanceByInvoice(temp)
+        })
+    },[cols])
 
     useEffect(() => {
         let temp = []
@@ -134,6 +143,7 @@ export default function CheckAttedance() {
             setRows({...rows,[openInvoiceID]:temp})
             console.log(rows)
         }
+
     },[openInvoiceID])
 
 
@@ -204,10 +214,27 @@ export default function CheckAttedance() {
         setOpenInvoiceID(index)
 
     }
-    var invoices_section = []
 
+    function changeMonth(e){
+        setMonth(e.target.value)
+    }
+    var invoices_section = []
+    console.log("re render")
     if(view === 'invoice'){
-        for(const invoice in attendanceByInvoice){
+        if(Object.keys(attendanceByInvoice).length == 0){
+            console.log("lets goo")
+            invoices_section.push(
+                <AppBar key={"appbar"} className={classes.appBar_root} position="static">
+                <Toolbar key={"toolbar"}>
+                    <Typography key={"typo"} align="left" variant="h6" className={classes.title}>
+                        NO INVOICES FOUND
+                    </Typography>
+                </Toolbar>
+                </AppBar>
+            )
+        }
+
+        for(const invoice in attendanceByInvoice){    
             invoices_section.push(
                 <>
                 <AppBar key={"appbar" + invoice} className={classes.appBar_root} position="static">
@@ -277,12 +304,23 @@ export default function CheckAttedance() {
                 </>
         )
     }
-    
     return (
         <>
             <div style={{width:'100%'}}>
                 <Button className={clsx(view=='invoice'?classes.selected:classes.not_selected,classes.viewButton)} onClick={() => toggleView('invoice')}>Invoice View<ViewStream /></Button>
                 <Button className={clsx(view=='full'?classes.selected:classes.not_selected,classes.viewButton)} onClick={() => toggleView('full')}>Full View< ViewList/></Button>
+                <TextField
+                    select
+                    label = "Filter Invoices by Month"
+                    value = {drop_month}
+                    defaultValue = {drop_month}
+                    style={{width:"200px",float:"right",margin:18}}
+                    onChange = {changeMonth}
+                >
+                    {months.map((mon) => (
+                        <MenuItem key = {mon} value = {mon}>{mon}</MenuItem>
+                    ))}
+                </TextField>
             </div>
             <div align="left">
                 {invoices_section}

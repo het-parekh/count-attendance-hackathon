@@ -22,6 +22,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import axios from 'axios'
+import Loading from '../Loading';
 
 const useStyles = makeStyles((theme) => ({
     root:{
@@ -134,45 +135,111 @@ const useStyles = makeStyles((theme) => ({
 
   const Dashboard = () => {
       const classes = useStyles();
-      const [toggleTime,setToggleTime] = useState(true)
-      const [toggleSelectWorkforce,setToggleSelectWorkforce] = useState("Gunmen")
+      const [toggleTime,setToggleTime] = useState('today')
+      const [toggleSelectWorkforce,setToggleSelectWorkforce] = useState("Gunman")
       const [toggleSelectYear,setToggleSelectYear] = useState("2021")
-      const [dailyAttendance,setDailyAttendance] = useState({Gunmen:0,Driver:0,Vehicle:0})
+      const [dailyAttendance,setDailyAttendance] = useState({Gunman:0,Driver:0,Vehicle:0})
+      const [monthlyAttendance,setMonthlyAttendance] = useState({Gunman:0,Driver:0,Vehicle:0  })
+      const [totalDailyAttendance,setTotalDailyAttendance] = useState({Gunman:0,Driver:0,Vehicle:0})
+      const [totalMonthlyAttendance,setTotalMonthlyAttendance] = useState({Gunman:0,Driver:0,Vehicle:0})
+      const [pie,setPie] = useState(
+        {labels:['Attended','Not Attended'],datasets:[{data:[10,20],backgroundColor:["#8cff1a","#ff4d4d"],borderColor:["#8cff1a","#ff4d4d"]}],}
+      )
 
-      const pie_gunmen = {
-        labels:['Attended','Not Attended'],
-        datasets:[{data:[150,30],backgroundColor:["#8cff1a","#ff4d4d"],borderColor:["#8cff1a","#ff4d4d"]}],
-      }
+      useEffect(() => {
+        axios.get('invoice/')
+        .then(res => {
+          let temp = new Date().getDate()
+          let daily_count = {...totalDailyAttendance}
+          let monthly_count = {...totalMonthlyAttendance}
+          res.data.forEach(invoice => {
+            invoice.Manpower_Names.forEach((manpower) => {
+              console.log(invoice)
+              daily_count[manpower.type] += 1
+              monthly_count[manpower.type] += temp
+              
+            })
+          })
+          setTotalMonthlyAttendance(monthly_count)
+          setTotalDailyAttendance(daily_count)
+        })
+        axios.get('attendance/'+new Date().toISOString().slice(0, 10))
+        .then(res => {
+          
+          let copy = {...dailyAttendance}
+          res.data.forEach((day) => {
+            day.attendances.forEach((manpower) => {
+              manpower.present_employee.forEach((present) => {
+                copy[present.type] += 1
+              })
+            })
+          })
+          setDailyAttendance(copy)
+        })
+        let date = new Date()
+        let start_date = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().slice(0, 10)
+        let end_date = date.toISOString().slice(0, 10)
+        axios.get(`attendance/${start_date}/${end_date}`)
+        .then(res => {
+            let copy = {...monthlyAttendance}
+            res.data.forEach((day) => {
+              day.attendances.forEach(manpower => {
+                manpower.present_employee.forEach((present) => {
+                  copy[present.type] += 1
+                })
+              })
+              setMonthlyAttendance(copy)
+          })
+        })
+      },[])
+
+      useEffect(() => {
+        console.log(dailyAttendance)
+        setPie({labels:['Attended','Not Attended'],datasets:[{data:[dailyAttendance.Gunman,totalDailyAttendance.Gunman],backgroundColor:["#8cff1a","#ff4d4d"],borderColor:["#8cff1a","#ff4d4d"]}],})
+      },[dailyAttendance,totalDailyAttendance])
+
       const budgets = {
           labels:['Jan','Feb','March','April','May','June','July',"Aug","Sept","Oct","Nov","Dec"],
           datasets:[{label:"Annual Budget Summary",data:[50000,70000,67343,90909,40000,77000,100000,60000,89999,10002,50000,90000],backgroundColor:Array(12).fill("#4d0000")}]
       }
       const bar_opts = {}
-      const pie_drivers = useState()
-      const pie_vehicles = useState()
-
-      useEffect(() => {
-        axios.get('attendance/'+new Date().toISOString().slice(0, 10))
-        .then(res => {
-          res.data.forEach((manpower) => {
-            setDailyAttendance({...dailyAttendance,[manpower.designation]:((prev) => prev + manpower.present_employee.length)})
-          
-          })
-        })
-      },[])
 
       function OnToggleTime(val){
-        val == 'today'?setToggleTime(true):setToggleTime(false)
+        val == 'today'?setToggleTime("today"):setToggleTime("month")
+        if (val === 'today'){
+          let copy = {...pie}
+          copy.datasets[0].data = [dailyAttendance[toggleSelectWorkforce] , totalDailyAttendance[toggleSelectWorkforce]] 
+          setPie(copy)
+          setToggleTime("today")
+        }else{
+          let copy = {...pie}
+          copy.datasets[0].data = [monthlyAttendance[toggleSelectWorkforce] , totalMonthlyAttendance[toggleSelectWorkforce]] 
+          setPie(copy)
+          setToggleTime("month")
+        }
       }
 
       const handleChangeWorkforce = (event) => {
         setToggleSelectWorkforce(event.target.value);
+        let copy = {...pie}
+        if(toggleTime === 'today'){
+          copy.datasets[0].data = [dailyAttendance[event.target.value] , totalDailyAttendance[event.target.value]] 
+          setPie(copy)
+        }else{
+          copy.datasets[0].data = [monthlyAttendance[event.target.value] , totalMonthlyAttendance[event.target.value]] 
+          setPie(copy)
+        }
+
       };
 
       const handleChangeYear = (event) => {
         setToggleSelectYear(event.target.value);
       };
-    
+
+      if(!dailyAttendance || !monthlyAttendance || !pie || !totalDailyAttendance || !monthlyAttendance){
+        return <Loading />
+      }
+
       return(
         <div >
          <div className={classes.root}>
@@ -210,7 +277,7 @@ const useStyles = makeStyles((theme) => ({
                   </Typography>
 
                   <Typography style={{width:"200px"}} variant="body2" component="p">
-                    Here you can mark every indivisual gunmen,driver or vehicle's attendance or update it.
+                    Here you can mark every indivisual Gunman,driver or vehicle's attendance or update it.
                   </Typography>
                   </CardContent>
             </Card>
@@ -270,15 +337,15 @@ const useStyles = makeStyles((theme) => ({
                         id: 'filled-age-native-simple',
                       }}
                     >
-                      <option className={classes.options} value={'Gunmen'}>Gunmen</option>
-                      <option className={classes.options} value={'Drivers'}>Drivers</option>
-                      <option className={classes.options} value={'Vehicles'}>Vehicles</option>
+                      <option className={classes.options} value={'Gunman'}>Gunmen</option>
+                      <option className={classes.options} value={'Driver'}>Drivers</option>
+                      <option className={classes.options} value={'Vehicle'}>Vehicles</option>
                     </Select>
                   </FormControl>
-                  <Button onClick = {() => OnToggleTime("today")} className={toggleTime?classes.selected:classes.notSelected} variant="outlined">Today</Button>
-                  <Button onClick = {() => OnToggleTime("month")} className={!toggleTime?classes.selected:classes.notSelected} variant="outlined">Month</Button>
+                  <Button onClick = {() => OnToggleTime("today")} className={toggleTime === 'today'?classes.selected:classes.notSelected} variant="outlined">Today</Button>
+                  <Button onClick = {() => OnToggleTime("month")} className={toggleTime === 'month'?classes.selected:classes.notSelected} variant="outlined">Month</Button>
                   <div style={{paddingTop:"20px"}}>
-                  <Pie width={"250px"} height={"250px"} data={pie_gunmen} options={{ responsive: true,maintainAspectRatio: false,plugins:{legend:{labels:{color:"white"}}} }} />
+                  <Pie  width={"250px"} height={"250px"} data={pie} options={{ responsive: true,maintainAspectRatio: false,plugins:{legend:{labels:{color:"white"}}} }} />
                   </div>
                 </CardContent>  
             </Card>

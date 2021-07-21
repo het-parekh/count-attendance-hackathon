@@ -9,7 +9,11 @@ const invoice_Schema = new mongoose.Schema({
 	Activity: { type: String },
 	Vendor: { type: mongoose.Types.ObjectId, ref: 'vendor' }
 
-});
+},
+	{
+		timestamps: true
+	}
+);
 
 const invoice = mongoose.model('invoice', invoice_Schema);
 module.exports = invoice;

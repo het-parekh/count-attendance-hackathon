@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     },
 
     header:{
-        marginBottom:10,
+        marginBottom:12,
         color:"white",
         border:"1px solid #1abc9c",
         backgroundColor:"#1abc9c"
@@ -36,7 +36,8 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: lighten(theme.palette.success.light, 0.85),
         fontSize:'22px',
         width:'100%',
-        textAlign:'center'
+        textAlign:'center',
+        marginTop:-15
       },
 }))
 
@@ -45,8 +46,8 @@ export default function CreateInvoice(){
 
     const [flash,setFlash]  = useState("")
     const [vendorArr,setVendorArr]  = useState()
-    const [vendor,setVendor]  = useState({id:'',name:''})
-    const [manpowerArr,setManpowerArr] = useState([{"designation" : "Gunman","name":""}])
+    const [vendor,setVendor]  = useState('')
+    const [manpowerArr,setManpowerArr] = useState([{"type" : "Gunman","name":""}])
     const [info,setInfo] = useState({activity:"",hours:"",vendor_id:""})
     const [err,setErr] = useState({activity:"",hours:""})
     const [userInfo,setUserInfo] = useState({region:"",branch:"",hub:""})
@@ -62,12 +63,13 @@ export default function CreateInvoice(){
         .then((res) => {
             console.log(res.data)
             setVendorArr(res.data)
-            setVendor({id:res.data[0]._id,name:res.data[0].vendor_name})
+            setVendor(res.data[0].vendor_name)
         })
     },[])
 
     function changeVendor(e){
-        setVendor({id:e.target.name,name:e.target.value})
+
+        setVendor(e.target.value)
     }
 
     function handleInput(e){
@@ -88,7 +90,7 @@ export default function CreateInvoice(){
     }
 
     function addManpower(){
-        setManpowerArr([...manpowerArr,{"designation" : "Gunman","name":""} ])
+        setManpowerArr([...manpowerArr,{"type" : "Gunman","name":""} ])
     }
 
     function handleSubmit(){
@@ -101,6 +103,7 @@ export default function CreateInvoice(){
         if(info.activity !== "" && info.hours !== ""){
             console.log("success")
             console.log(manpowerArr)
+        }
             let data = {
                 Manpower_Names:manpowerArr,
                 Hours_per_day:info.hours,
@@ -108,30 +111,36 @@ export default function CreateInvoice(){
                 Hub:userInfo.hub,
                 Branch:userInfo.branch,
                 Region:userInfo.region,
-                Vendor:vendor.id,
             }
+            vendorArr.forEach(ven => {
+
+                if(ven.vendor_name == vendor){
+                    data.Vendor = ven._id
+                }
+            })
             console.log("data cre nivoice",data)
             axios.post('/invoice',data,{withCredentials:true})
             .then(res => {
                 console.log("create success",res)
                 setVendor({id:'',name:''})
-                setManpowerArr([{designation : "Gunman",name:""}])
+                setManpowerArr([{type : "Gunman",name:""}])
                 setInfo({activity:"",hours:"",vendor_id:""})
                 setErr({activity:"",hours:""})
 
                 window.scrollTo(0, 0)
-                setFlash("Added User Successfully")
+                setFlash("Added Invoice Successfully")
                 setTimeout(() => {
                     setFlash("")
                 },5000)
             })
             .catch(err => console.log(err.response))
         }
-    }
+    
+    
     if(!vendorArr){
         return (<Loading />)
     }
-    
+    console.log(vendor)
     return(
         <div className = {classes.box}>
         <form className={classes.root}>
@@ -184,7 +193,7 @@ export default function CreateInvoice(){
                 <TextField name = "hours"
                     type="Number"
                     InputProps = {{
-                        inputProps : {max:24}
+                        inputProps : {max:24,min:1}
                     }}
                     error = {err.hours}
                     helperText = {err.hours}
@@ -199,8 +208,8 @@ export default function CreateInvoice(){
                 <TextField
                     select
                     label = "Select Vendor Name"
-                    name={vendor.id}
-                    value={vendor.name}
+                    value={vendor}
+                    defaultValue={vendor}
                     onChange={changeVendor}
                 >
                     {vendorArr.map((vendor,index) => (
@@ -227,10 +236,10 @@ export default function CreateInvoice(){
                     </TextField>
                     <TextField key = {"manpowerDesignation" + index} 
                         select
-                        name = {index+"#designation"}
+                        name = {index+"#type"}
                         label = "Provide designation"
-                        value={manpower.designation}
-                        defaultValue={manpower.designation}
+                        value={manpower.type}
+                        defaultValue={manpower.type}
                         onChange={changeManpower}
                     >
                         <MenuItem key={"Gunman"} value="Gunman">Gunman</MenuItem>

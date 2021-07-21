@@ -42,7 +42,8 @@ export default function Login(props){
         setInfo({...info,[e.target.name] : e.target.value})
     }
 
-    function handleSubmit(){
+    function handleSubmit(e){
+        e.preventDefault()
         if (info.email === ""){
             setErr({...err,email:"This field cannot be left empty"})
             return
@@ -96,7 +97,7 @@ export default function Login(props){
             </div>
             
             <div align="center">
-                <Button onClick={handleSubmit} variant = "contained" style={{backgroundColor:"#1abc9c",color:"#fff",marginTop:"30px"}}> lOG IN</Button>
+                <Button onSubmit={handleSubmit} type='submit' onClick={handleSubmit} variant = "contained" style={{backgroundColor:"#1abc9c",color:"#fff",marginTop:"30px"}}> lOG IN</Button>
             </div>
         </form>
         </div>

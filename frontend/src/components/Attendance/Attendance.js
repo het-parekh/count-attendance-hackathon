@@ -79,9 +79,6 @@ function Attendance() {
 
 
 
-  const [allVendors, setAllVendors] = useState([{}])
-
-  const [vendor, setVendor] = useState('')
 
   const [invoice, setInvoice] = useState([{}])
   const [filtered, setFiltered] = useState([{}])
@@ -179,7 +176,8 @@ function Attendance() {
     const res = []
     console.log(copy)
     copy.forEach(c => {
-      if ((c.vendorName).includes(keyString)) {
+      if ((c.Vendor.vendor_name.toLowerCase().includes(keyString))) {
+        console.log(c.Vendor.vendor_name, 'matched')
         res.push(c)
       }
     })
@@ -272,98 +270,94 @@ function Attendance() {
     // console.log(selectedManpower, 'kya baat hai')
   }
 
-  if (filtered.length > 0 && selectedManpower[0] != []) {
-    return (
+  return (
 
-      <div>
-        <Paper className={classes.root}>
+    <div>
+      <Paper className={classes.root}>
 
-          <InputBase
-            className={classes.input}
-            placeholder="Search By name or Id"
-            inputProps={{ 'aria-label': 'Search By name or Id' }}
-            onChange={searchHandler}
-          />
-          <IconButton className={classes.iconButton} aria-label="search">
-            <SearchIcon />
-          </IconButton>
-        </Paper>
+        <InputBase
+          className={classes.input}
+          placeholder="Search By name or Id"
+          inputProps={{ 'aria-label': 'Search By name or Id' }}
+          onChange={searchHandler}
+        />
+        <IconButton className={classes.iconButton} aria-label="search">
+          <SearchIcon />
+        </IconButton>
+      </Paper>
 
-        <TableContainer style={{ width: '90%', margin: 'auto', boxShadow: "4px 2px 16px 2px rgba(0,0,0,.1)", border: "1px solid rgba(0,0,0,.1)" }} component={Paper}>
-          <Table >
-            <TableHead>
-              <TableRow>
-                <StyledTableCell>Vendor Id</StyledTableCell>
-                <StyledTableCell>Activity</StyledTableCell>
-                <StyledTableCell>Employee Names</StyledTableCell>
-                <StyledTableCell>Assigned Hours</StyledTableCell>
-                <StyledTableCell>In Time</StyledTableCell>
-                <StyledTableCell>Out Time</StyledTableCell>
-                <StyledTableCell>OT hours</StyledTableCell>
-                <StyledTableCell>Mark Attendance</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filtered.map((row, index) => {
-                const labelId = `enhanced-table-checkbox-${index}`
-                return (
+      <TableContainer style={{ width: '90%', margin: 'auto', boxShadow: "4px 2px 16px 2px rgba(0,0,0,.1)", border: "1px solid rgba(0,0,0,.1)" }} component={Paper}>
+        <Table >
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>Vendor Id</StyledTableCell>
+              <StyledTableCell>Activity</StyledTableCell>
+              <StyledTableCell>Employee Names</StyledTableCell>
+              <StyledTableCell>Assigned Hours</StyledTableCell>
+              <StyledTableCell>In Time</StyledTableCell>
+              <StyledTableCell>Out Time</StyledTableCell>
+              <StyledTableCell>OT hours</StyledTableCell>
+              <StyledTableCell>Mark Attendance</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filtered.map((row, index) => {
+              const labelId = `enhanced-table-checkbox-${index}`
+              return (
 
-                  <StyledTableRow key={"row" + index}>
-                    <StyledTableCell key={"someId" + index}>
-                      {row.Vendor ? row.Vendor.vendor_name : null}
-                    </StyledTableCell>
-                    <StyledTableCell key={"activity" + index}>
-                      {row.Activity}
-                    </StyledTableCell>
-                    <StyledTableCell key={"names" + index} style={{ display: 'flex', flexDirection: 'column' }} className="manpowerNames">
-                      {row.Manpower_Names ? row.Manpower_Names.map((man, i) => (
-                        <div style={{ display: 'flex', alignItems: 'center', height: '24px' }} key={"containManpower" + i}>
-                          <Checkbox
-                            key={"checkbox" + i}
-                            checked={selectedManpower[index] ? selectedManpower[index].includes(man.name + " " + man.type) : false}
-                            classes={{ checked: classes.checkColor }}
-                            inputProps={{ 'aria-labelledby': labelId }}
-                            name={`${man.name} ${man.type}#${selectedManpower[index] ? selectedManpower[index].includes(man.name + " " + man.type) : null}`}
-                            disabled={todayAttendance.includes(row._id)}
-                            onChange={(e) => manPowerSelectHanlder(e, index)}
-                          />
-                          <span key={"displayNames + i"} style={{ whiteSpace: 'nowrap' }}>{man.name}&nbsp; ({man.type})</span>
-                        </div>
-                      )) : ''}
+                <StyledTableRow key={"row" + index}>
+                  <StyledTableCell key={"someId" + index}>
+                    {row.Vendor ? row.Vendor.vendor_name : null}
+                  </StyledTableCell>
+                  <StyledTableCell key={"activity" + index}>
+                    {row.Activity}
+                  </StyledTableCell>
+                  <StyledTableCell key={"names" + index} style={{ display: 'flex', flexDirection: 'column' }} className="manpowerNames">
+                    {row.Manpower_Names ? row.Manpower_Names.map((man, i) => (
+                      <div style={{ display: 'flex', alignItems: 'center', height: '24px' }} key={"containManpower" + i}>
+                        <Checkbox
+                          key={"checkbox" + i}
+                          checked={selectedManpower[index] ? selectedManpower[index].includes(man.name + " " + man.type) : false}
+                          classes={{ checked: classes.checkColor }}
+                          inputProps={{ 'aria-labelledby': labelId }}
+                          name={`${man.name} ${man.type}#${selectedManpower[index] ? selectedManpower[index].includes(man.name + " " + man.type) : null}`}
+                          disabled={todayAttendance.includes(row._id)}
+                          onChange={(e) => manPowerSelectHanlder(e, index)}
+                        />
+                        <span key={"displayNames + i"} style={{ whiteSpace: 'nowrap' }}>{man.name}&nbsp; ({man.type})</span>
+                      </div>
+                    )) : ''}
 
-                    </StyledTableCell>
-                    <StyledTableCell key={"hoursperDay" + index}>
-                      {row.Hours_per_day}
-                    </StyledTableCell>
+                  </StyledTableCell>
+                  <StyledTableCell key={"hoursperDay" + index}>
+                    {row.Hours_per_day}
+                  </StyledTableCell>
 
-                    <StyledTableCell key={"Intimecell" + index}>
-                      <input key={"Intime" + index} name={"inTime#" + index} className="timeHandle" type="time" onChange={(e) => { timeHandler(e, row.Hours_per_day) }} min="0" value={workingTime[index] ? workingTime[index].inTime : null} />
-                    </StyledTableCell>
-                    <StyledTableCell key={"outTimecell" + index}>
-                      <input key={"OutTime" + index} name={"outTime#" + index} className="timeHandle" type="time" onChange={(e) => { timeHandler(e, row.Hours_per_day) }} min="0" value={workingTime[index] ? workingTime[index].outTime : null} disabled={workingTime[index] ? workingTime[index].inTime === '' : null} />
-                    </StyledTableCell>
-                    <StyledTableCell key={"othoursCell" + index}>
-                      <input key={"othours" + index} className="otHours" type="number" min="0" value={workingTime[index] ? workingTime[index].otHours : null} readOnly />
-                    </StyledTableCell>
+                  <StyledTableCell key={"Intimecell" + index}>
+                    <input key={"Intime" + index} name={"inTime#" + index} className="timeHandle" type="time" onChange={(e) => { timeHandler(e, row.Hours_per_day) }} min="0" value={workingTime[index] ? workingTime[index].inTime : null} />
+                  </StyledTableCell>
+                  <StyledTableCell key={"outTimecell" + index}>
+                    <input key={"OutTime" + index} name={"outTime#" + index} className="timeHandle" type="time" onChange={(e) => { timeHandler(e, row.Hours_per_day) }} min="0" value={workingTime[index] ? workingTime[index].outTime : null} disabled={workingTime[index] ? workingTime[index].inTime === '' : null} />
+                  </StyledTableCell>
+                  <StyledTableCell key={"othoursCell" + index}>
+                    <input key={"othours" + index} className="otHours" type="number" min="0" value={workingTime[index] ? workingTime[index].otHours : null} readOnly />
+                  </StyledTableCell>
 
-                    <StyledTableCell key={"buttoncell" + index}>
-                      <Button key={"button" + index} onClick={(e) => { submitHandler(e, row._id, workingTime[index], selectedManpower[index]) }} variant="contained" color="primary" disabled={(workingTime[index] && selectedManpower[index]) ? workingTime[index].inTime === '' || selectedManpower[index].length === 0 : false}>
-                        {(todayAttendance.includes(row._id)) ? "Update Attendance" : "Mark Attendance"}
-                      </Button>
-                    </StyledTableCell>
+                  <StyledTableCell key={"buttoncell" + index}>
+                    <Button key={"button" + index} onClick={(e) => { submitHandler(e, row._id, workingTime[index], selectedManpower[index]) }} variant="contained" color="primary" disabled={(workingTime[index] && selectedManpower[index]) ? workingTime[index].inTime === '' || selectedManpower[index].length === 0 : false}>
+                      {(todayAttendance.includes(row._id)) ? "Update Attendance" : "Mark Attendance"}
+                    </Button>
+                  </StyledTableCell>
 
-                  </StyledTableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div >
-    )
-  }
-  else {
-    return <h1>Loading...</h1>
-  }
+                </StyledTableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div >
+  )
+
 }
 
 export default Attendance

@@ -23,6 +23,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import axios from 'axios'
 import Loading from '../Loading';
+import {Link} from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
     root:{
@@ -137,7 +138,7 @@ const useStyles = makeStyles((theme) => ({
       const classes = useStyles();
       const [toggleTime,setToggleTime] = useState('today')
       const [toggleSelectWorkforce,setToggleSelectWorkforce] = useState("Gunman")
-      const [toggleSelectYear,setToggleSelectYear] = useState("2021")
+      const [toggleSelectYear,setToggleSelectYear] = useState((new Date()).getFullYear())
       const [dailyAttendance,setDailyAttendance] = useState({Gunman:0,Driver:0,Vehicle:0})
       const [monthlyAttendance,setMonthlyAttendance] = useState({Gunman:0,Driver:0,Vehicle:0  })
       const [totalDailyAttendance,setTotalDailyAttendance] = useState({Gunman:0,Driver:0,Vehicle:0})
@@ -145,16 +146,22 @@ const useStyles = makeStyles((theme) => ({
       const [pie,setPie] = useState(
         {labels:['Attended','Not Attended'],datasets:[{data:[10,20],backgroundColor:["#8cff1a","#ff4d4d"],borderColor:["#8cff1a","#ff4d4d"]}],}
       )
+      const [budgets,setBudgets] = useState({
+        labels:['Jan','Feb','March','April','May','June','July',"Aug","Sept","Oct","Nov","Dec"],
+        datasets:[{label:"Annual Budget Summary",data:[0,0,0,0,0,0,0,0,0,0,0,0],backgroundColor:Array(12).fill("#4d0000")}]
+    })
 
       useEffect(() => {
-        axios.get('invoice/')
+
+        axios.get('invoice')
         .then(res => {
-          let temp = new Date().getDate()
           let daily_count = {...totalDailyAttendance}
           let monthly_count = {...totalMonthlyAttendance}
           res.data.forEach(invoice => {
+            let temp = 0
+            temp = new Date().getDate() - Number(invoice.createdAt.split(/[T ||-]/)[2])
+
             invoice.Manpower_Names.forEach((manpower) => {
-              console.log(invoice)
               daily_count[manpower.type] += 1
               monthly_count[manpower.type] += temp
               
@@ -163,6 +170,7 @@ const useStyles = makeStyles((theme) => ({
           setTotalMonthlyAttendance(monthly_count)
           setTotalDailyAttendance(daily_count)
         })
+
         axios.get('attendance/'+new Date().toISOString().slice(0, 10))
         .then(res => {
           
@@ -191,18 +199,27 @@ const useStyles = makeStyles((theme) => ({
               setMonthlyAttendance(copy)
           })
         })
+        
       },[])
 
       useEffect(() => {
-        console.log(dailyAttendance)
-        setPie({labels:['Attended','Not Attended'],datasets:[{data:[dailyAttendance.Gunman,totalDailyAttendance.Gunman],backgroundColor:["#8cff1a","#ff4d4d"],borderColor:["#8cff1a","#ff4d4d"]}],})
-      },[dailyAttendance,totalDailyAttendance])
+        axios.get('/bill/all')
+        .then((res) => {
+          console.log(res)
+          let copy = {...budgets}
+          res.data.forEach((bill) =>{
+            let [year,month] = [bill.createdAt.split("-")[0],bill.createdAt.split("-")[1]]
+            if(Number(year) === Number(toggleSelectYear)){
+              copy.datasets[0].data[Number(month)-1] = bill.total_cost
+            }
+          })
+          setBudgets(copy)
+        })
+      },[toggleSelectYear])
 
-      const budgets = {
-          labels:['Jan','Feb','March','April','May','June','July',"Aug","Sept","Oct","Nov","Dec"],
-          datasets:[{label:"Annual Budget Summary",data:[50000,70000,67343,90909,40000,77000,100000,60000,89999,10002,50000,90000],backgroundColor:Array(12).fill("#4d0000")}]
-      }
-      const bar_opts = {}
+      useEffect(() => {
+        setPie({labels:['Attended','Not Attended'],datasets:[{data:[dailyAttendance.Gunman,totalDailyAttendance.Gunman],backgroundColor:["#8cff1a","#ff4d4d"],borderColor:["#8cff1a","#ff4d4d"]}],})
+      },[totalDailyAttendance])
 
       function OnToggleTime(val){
         val == 'today'?setToggleTime("today"):setToggleTime("month")
@@ -236,10 +253,10 @@ const useStyles = makeStyles((theme) => ({
         setToggleSelectYear(event.target.value);
       };
 
-      if(!dailyAttendance || !monthlyAttendance || !pie || !totalDailyAttendance || !monthlyAttendance){
+      if(!dailyAttendance || !monthlyAttendance || !pie || !totalDailyAttendance || !monthlyAttendance ||!budgets || !toggleSelectYear){
         return <Loading />
       }
-
+      console.log(budgets)
       return(
         <div >
          <div className={classes.root}>
@@ -345,7 +362,7 @@ const useStyles = makeStyles((theme) => ({
                   <Button onClick = {() => OnToggleTime("today")} className={toggleTime === 'today'?classes.selected:classes.notSelected} variant="outlined">Today</Button>
                   <Button onClick = {() => OnToggleTime("month")} className={toggleTime === 'month'?classes.selected:classes.notSelected} variant="outlined">Month</Button>
                   <div style={{paddingTop:"20px"}}>
-                  <Pie  width={"250px"} height={"250px"} data={pie} options={{ responsive: true,maintainAspectRatio: false,plugins:{legend:{labels:{color:"white"}}} }} />
+                  <Link to = '/checkattendance'><Pie style={{cursor:"pointer"}} width={"250px"} height={"250px"} data={pie} options={{ responsive: true,maintainAspectRatio: false,plugins:{legend:{labels:{color:"white"}}} }} /></Link>
                   </div>
                 </CardContent>  
             </Card>

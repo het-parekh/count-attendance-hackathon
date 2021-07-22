@@ -28,7 +28,7 @@ router.post('/',async (req,res)=>{
 
 router.get('/', async(req,res)=>{
     try {
-        let result= await invoice.find({$and:[{createdAt: {$gte: new Date(parseInt(start[0]),parseInt( start[1] )-1, parseInt(start[2]),6)}},{updatedAt: {$lte: new Date(parseInt(end[0]),parseInt( end[1] )-1, parseInt(end[2]),30)}}]}).populate('Vendor');
+        let result= await invoice.find().populate('Vendor');
         return res.status(200).send(result);
     } catch (error) {
         res.status(500).send();

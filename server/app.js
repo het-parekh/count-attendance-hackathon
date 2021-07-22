@@ -28,7 +28,7 @@ app.use('/invoice',invoice);
 app.use('/vendor',vendor);
 app.use('/infotable',info_table);
 app.use('/attendance', attendance);
-app.use('/Bill', bill);
+app.use('/bill', bill);
 app.use('/manpower', manpower);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

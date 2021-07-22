@@ -13,10 +13,20 @@ router.get('/:start/:end', async (req,res) => {
     }
 });
 
-router.get('/all', async (req,res) => {
+router.get('/previous', async (req,res) => {
     var current_month=new Date().toISOString().split('-');
     try {
         let result= await bill.find({updatedAt: {$lte: new Date(parseInt(current_month[0]),parseInt(current_month[1]-1),1)}}).populate('Vendor_ref').populate('invoice');
+        res.status(200).send(result);
+    } catch (error) {
+        res.status(500).send();
+    }
+});
+
+router.get('/all', async (req,res) => {
+    var current_month=new Date().toISOString().split('-');
+    try {
+        let result= await bill.find().populate('Vendor_ref').populate('invoice');
         res.status(200).send(result);
     } catch (error) {
         res.status(500).send();

@@ -73,13 +73,18 @@ export default function Bill() {
                 width: 200
             },
             {
+                field: 'base_cost',
+                headerName: 'Base Cost (\u20B9)',
+                width: 200
+            },
+            {
                 field: 'extra_charges',
-                headerName: 'Extra Charges',
-                width: 170
+                headerName: 'Extra Charges (\u20B9)',
+                width: 200
             },
             {
                 field: 'total_cost',
-                headerName: 'Total Cost',
+                headerName: 'Total Cost (\u20B9)',
                 width: 200
             }
         ]
@@ -104,7 +109,7 @@ export default function Bill() {
         const end = today.getFullYear() + "-" + curMonth + "-" + endDay
         console.log(start, end)
 
-        axios.get('/Bill/' + start + '/' + end)
+        axios.get('/bill/' + start + '/' + end)
             .then(res => {
                 const trow = []
                 console.log(res)
@@ -117,6 +122,7 @@ export default function Bill() {
                         invoice_no: r.invoice._id,
                         service_month: months[r.service_month],
                         no_of_employees: r.number_of_employees.length,
+                        base_cost:Math.round(( r.base_cost + Number.EPSILON) * 100) / 100,                       
                         extra_charges: r.extra_charges,
                         total_cost: r.total_cost.toFixed(2),
                     }
@@ -128,7 +134,7 @@ export default function Bill() {
             })
 
         // Get Previous Months Bill
-        axios.get('/Bill/all')
+        axios.get('/bill/previous')
             .then(res => {
                 const trow = []
                 console.log(res)
@@ -144,6 +150,7 @@ export default function Bill() {
                             invoice_no: r.invoice._id,
                             service_month: months[r.service_month],
                             no_of_employees: r.number_of_employees.length,
+                            base_cost:Math.round(( r.base_cost + Number.EPSILON) * 100) / 100,   
                             extra_charges: r.extra_charges,
                             total_cost: r.total_cost.toFixed(2),
                         }

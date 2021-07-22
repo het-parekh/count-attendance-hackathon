@@ -240,23 +240,26 @@ async function Update_Bill() {
             } else {
                 let number_of_employees = [];
                 let newBill = Bill();
-                let total = 0;
+                let base = 0;
+                let extra = 0;
                 newBill.Vendor_ref = element.invoice.Vendor._id;
                 newBill.invoice = element.invoice._id;
                 /* console.log(element.invoice); */
                 element.invoice.Manpower_Names.forEach((i, index) => {
                     let newperson={
                         Name:i.name,
-                        amount:sla_map[i.type.toUpperCase().trim()]*getTimeDiffrence(element.In_time,element.Out_time)+ sla_map[i.type.toUpperCase().trim()]*element.OT_hours
+                        amount:sla_map[i.type.toUpperCase().trim()]*getTimeDiffrence(element.In_time,element.Out_time),
+                        extra_amount:sla_map[i.type.toUpperCase().trim()]*element.OT_hours
                     }
-                    total += newperson.amount;
+                    base += newperson.amount;
+                    extra += newperson.extra_amount;
                     number_of_employees.push(newperson);
                 });
                 newBill.number_of_employees = number_of_employees;
                 newBill.service_month = new Date().getMonth()+1;
-                newBill.base_cost = 0
-                newBill.extra_charges = 0
-                newBill.total_cost = total
+                newBill.base_cost = base
+                newBill.extra_charges = extra
+                newBill.total_cost = base + extra
                 await newBill.save();
             }
         });
@@ -283,8 +286,8 @@ function getTimeDiffrence(intime, outtime) {
 }
 
 module.exports = {
-    forgetPassword: forgetPassword,
-    resetPassword: resetPassword,
+    // forgetPassword: forgetPassword,
+    // resetPassword: resetPassword,
     addNewUserToDatabase: addNewUserToDatabase,
     DeleteById: DeleteById,
     blaclist_Tokens: blaclist_Tokens,

@@ -75,7 +75,7 @@ const MenuProps = {
 
 
 
-function Attendance() {
+function Attendance({ region }) {
 
 
 
@@ -105,7 +105,10 @@ function Attendance() {
         let temp = []
         let selectMan = []
         res.data.forEach(d => {
-          t.push({ ...d, isSelected: false })
+          console.log(d, 'each of them')
+          if (d.Region == region) {
+            t.push({ ...d, isSelected: false })
+          }
           console.log(d._id, 'id se aaa')
           temp.push({ inTime: (d.inTime ? d.inTime : ''), outTime: (d.outTime ? d.outTime : ''), otHours: d.otHours ? d.otHours : 0, invoice: d._id })
           selectMan.push([])

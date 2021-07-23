@@ -57,14 +57,14 @@ class Main extends Component {
 
         return (
             <div>
-                <Navbar LogoutUser={this.props.LogoutUser} isAuthenticated={this.props.Auth.isAuthenticated} />
+                <Navbar LogoutUser={this.props.LogoutUser} isAuthenticated={this.props.Auth.isAuthenticated} region={this.props.Auth.region} role={this.props.Auth.role} />
                 <Switch>
 
                     <PublicRoute exact path='/login' component={() => <Login Auth={this.props.Auth} LoginUser={this.props.LoginUser} />}></PublicRoute>
 
                     <PrivateRoute exact path='/adduser' component={AddUser}></PrivateRoute>
                     <PrivateRoute exact path='/dashboard' component={Dashboard}></PrivateRoute>
-                    <PrivateRoute exact path='/attendance' component={Attendance}></PrivateRoute>
+                    <PrivateRoute exact path='/attendance' component={() => <Attendance region={this.props.Auth.region} />}></PrivateRoute>
                     <PrivateRoute exact path='/checkattendance' component={CheckAttedance}></PrivateRoute>
                     <PrivateRoute exact path='/createinvoice' component={CreateInvoice}></PrivateRoute>
                     <PrivateRoute exact path='/billdetails' component={Bill}></PrivateRoute>

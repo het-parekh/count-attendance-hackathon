@@ -15,6 +15,10 @@ nav .logo{
   font-weight: bold;
   color:white;
 }
+nav .logo > *{
+  text-decoration: none;
+  color: white;
+}
 
 nav ul{
   display: flex;
@@ -74,12 +78,13 @@ nav ul li >*:hover{
 }
 
 
-@media (max-width: 660px){
+@media (max-width: 1160px){
   nav ul{
     flex-direction: column;
     width: 100%;
     position: absolute;
     left:0;
+    justify-content: flex-start;
     height: calc(100% - 70px);
     padding: 0;
     top:70px;
@@ -88,7 +93,7 @@ nav ul li >*:hover{
     z-index: 1000;
   }
   nav ul li{
-    margin: 40px;
+    margin: 10px;
   }
   .burger{
     display: block;

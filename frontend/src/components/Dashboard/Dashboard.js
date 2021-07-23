@@ -296,6 +296,11 @@ const Dashboard = () => {
                   Here you can mark every individual Gunman,driver or vehicle's attendance or update it.
                 </Typography>
               </CardContent>
+              <CardActionArea>
+                <Link to='/attendance' style={{ color: "#e0e0e0" }}>
+                  <Button style={{ width: 100, fontWeight: "bold", float: "right" }} color="primary" variant="outlined">GO  </Button>
+                </Link>
+              </CardActionArea>
             </Card>
           </Grid>
 
@@ -303,17 +308,20 @@ const Dashboard = () => {
             <Card className={classes.card}>
               <CardContent >
                 <Typography className={classes.wrapIcon} variant="h6" component="h3">
-                  View Profile <button style={{ backgroundColor: "#ff751a" }} className={classes.storeIcon}><AssignmentIndIcon style={{ color: "white" }} /></button>
+                  Create New Vendor <button style={{ backgroundColor: "#ff751a" }} className={classes.storeIcon}><AssignmentIndIcon style={{ color: "white" }} /></button>
                 </Typography>
 
                 <Typography style={{ width: "200px" }} variant="body2" component="p">
-                  Check out your profile
-                  <br />
-                  <br />
+                  Here you can create new vendor and add their respective SLA's
                   <br />
                   <br />
                 </Typography>
               </CardContent>
+              <CardActionArea>
+                <Link to='/adduser' style={{ color: "#e0e0e0" }}>
+                  <Button style={{ width: 100, fontWeight: "bold", float: "right" }} color="primary" variant="outlined">GO  </Button>
+                </Link>
+              </CardActionArea>
             </Card>
           </Grid>
 
@@ -329,6 +337,11 @@ const Dashboard = () => {
                   The bill is generated on the 2nd of every month.
                 </Typography>
               </CardContent>
+              <CardActionArea>
+                <Link to='/billdetails' style={{ color: "#e0e0e0" }}>
+                  <Button style={{ width: 100, fontWeight: "bold", float: "right" }} color="primary" variant="outlined">GO  </Button>
+                </Link>
+              </CardActionArea>
             </Card>
           </Grid>
         </Grid>

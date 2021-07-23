@@ -10,6 +10,11 @@ function Navbar(props) {
   const [Open, setOpen] = React.useState(false)
 
   const toggleClick = () => {
+    if (!Open) {
+      document.body.style.position = 'fixed'
+    } else {
+      document.body.style.position = 'static'
+    }
     setOpen(prev => { return !prev })
   }
 
@@ -23,13 +28,15 @@ function Navbar(props) {
         <li><Link to="/createinvoice">Create Invoice</Link></li>
         <li><Link to="/adduser">Add User</Link></li>
         <li><div onClick={props.LogoutUser}>Logout <ExitToAppRoundedIcon /></div></li>
+        <li style={{ color: '#1a75ff', background: 'white', padding: '10px' }}>{props.region}</li>
+        <li style={{ color: '#1a75ff', background: 'white', padding: '10px', textTransform: '' }}>{props.role} Role</li>
       </ul>
     )
   }
 
   return (
     <nav className={Open ? "nav-active" : ''}>
-      <div className="logo">CMS</div>
+      <div className="logo"><Link to="/dashboard">CMS</Link></div>
       {ulLis}
       <div className="burger" onClick={toggleClick}>
         <div className="line line1"></div>

@@ -150,7 +150,6 @@ const useStyles = makeStyles((theme) => ({
         labels:['Jan','Feb','March','April','May','June','July',"Aug","Sept","Oct","Nov","Dec"],
         datasets:[{label:"Annual Budget Summary",data:[0,0,0,0,0,0,0,0,0,0,0,0],backgroundColor:Array(12).fill("#4d0000")}]
     })
-
       useEffect(() => {
 
         axios.get('invoice')
@@ -167,6 +166,7 @@ const useStyles = makeStyles((theme) => ({
               
             })
           })
+          console.log(daily_count)
           setTotalMonthlyAttendance(monthly_count)
           setTotalDailyAttendance(daily_count)
         })
@@ -205,7 +205,6 @@ const useStyles = makeStyles((theme) => ({
       useEffect(() => {
         axios.get('/bill/all')
         .then((res) => {
-          console.log(res)
           let copy = {...budgets}
           res.data.forEach((bill) =>{
             let [year,month] = [bill.createdAt.split("-")[0],bill.createdAt.split("-")[1]]
@@ -225,12 +224,12 @@ const useStyles = makeStyles((theme) => ({
         val == 'today'?setToggleTime("today"):setToggleTime("month")
         if (val === 'today'){
           let copy = {...pie}
-          copy.datasets[0].data = [dailyAttendance[toggleSelectWorkforce] , totalDailyAttendance[toggleSelectWorkforce]] 
+          copy.datasets[0].data = [dailyAttendance[toggleSelectWorkforce] , totalDailyAttendance[toggleSelectWorkforce] - dailyAttendance[toggleSelectWorkforce]] 
           setPie(copy)
           setToggleTime("today")
         }else{
           let copy = {...pie}
-          copy.datasets[0].data = [monthlyAttendance[toggleSelectWorkforce] , totalMonthlyAttendance[toggleSelectWorkforce]] 
+          copy.datasets[0].data = [monthlyAttendance[toggleSelectWorkforce] , totalMonthlyAttendance[toggleSelectWorkforce] - monthlyAttendance[toggleSelectWorkforce]] 
           setPie(copy)
           setToggleTime("month")
         }
@@ -240,10 +239,10 @@ const useStyles = makeStyles((theme) => ({
         setToggleSelectWorkforce(event.target.value);
         let copy = {...pie}
         if(toggleTime === 'today'){
-          copy.datasets[0].data = [dailyAttendance[event.target.value] , totalDailyAttendance[event.target.value]] 
+          copy.datasets[0].data = [dailyAttendance[event.target.value] , totalDailyAttendance[event.target.value] - dailyAttendance[event.target.value]] 
           setPie(copy)
         }else{
-          copy.datasets[0].data = [monthlyAttendance[event.target.value] , totalMonthlyAttendance[event.target.value]] 
+          copy.datasets[0].data = [monthlyAttendance[event.target.value] , totalMonthlyAttendance[event.target.value] - monthlyAttendance[event.target.value]] 
           setPie(copy)
         }
 
@@ -256,7 +255,6 @@ const useStyles = makeStyles((theme) => ({
       if(!dailyAttendance || !monthlyAttendance || !pie || !totalDailyAttendance || !monthlyAttendance ||!budgets || !toggleSelectYear){
         return <Loading />
       }
-      console.log(budgets)
       return(
         <div >
          <div className={classes.root}>

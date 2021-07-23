@@ -91,6 +91,7 @@ export default function CheckAttedance() {
     }, [drop_month])
 
     useLayoutEffect(() => {
+
         if(!cols.length>0){
             return
         }
@@ -137,11 +138,9 @@ export default function CheckAttedance() {
                         hide_cols[index] = {...hide_cols[index],hide:true}
                     }
                 }
-                console.log(temp,'mainnn')
             })
             setCols(hide_cols)
             setRows({...rows,[openInvoiceID]:temp})
-            console.log(rows)
         }
 
     },[openInvoiceID])
@@ -188,11 +187,9 @@ export default function CheckAttedance() {
                         })
                     }
                 })
-                console.log(temp,'temppp')
                 allRows.push(...temp)
         }
         setRowsFull(allRows)
-        console.log("fullll",allRows)
             setView('full')
 
         }
@@ -219,10 +216,8 @@ export default function CheckAttedance() {
         setMonth(e.target.value)
     }
     var invoices_section = []
-    console.log("re render")
     if(view === 'invoice'){
         if(Object.keys(attendanceByInvoice).length == 0){
-            console.log("lets goo")
             invoices_section.push(
                 <AppBar key={"appbar"} className={classes.appBar_root} position="static">
                 <Toolbar key={"toolbar"}>

@@ -122,7 +122,7 @@ export default function Bill() {
                         invoice_no: r.invoice._id,
                         service_month: months[r.service_month],
                         no_of_employees: r.number_of_employees.length,
-                        base_cost:Math.round(( r.base_cost + Number.EPSILON) * 100) / 100,                       
+                        base_cost: Math.round((r.base_cost + Number.EPSILON) * 100) / 100,
                         extra_charges: r.extra_charges,
                         total_cost: r.total_cost.toFixed(2),
                     }
@@ -150,7 +150,7 @@ export default function Bill() {
                             invoice_no: r.invoice._id,
                             service_month: months[r.service_month],
                             no_of_employees: r.number_of_employees.length,
-                            base_cost:Math.round(( r.base_cost + Number.EPSILON) * 100) / 100,   
+                            base_cost: Math.round((r.base_cost + Number.EPSILON) * 100) / 100,
                             extra_charges: r.extra_charges,
                             total_cost: r.total_cost.toFixed(2),
                         }

@@ -293,7 +293,7 @@ const Dashboard = () => {
                 </Typography>
 
                 <Typography style={{ width: "200px" }} variant="body2" component="p">
-                  Here you can mark every individual Gunman,driver or vehicle's attendance or update it.
+                  Here you can mark every indivisual Gunman,driver or vehicle's attendance or update it.
                 </Typography>
               </CardContent>
               <CardActionArea>

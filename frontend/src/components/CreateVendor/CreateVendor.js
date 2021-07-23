@@ -1,10 +1,37 @@
 import React, { useState } from 'react'
-import { TextField, Button } from '@material-ui/core'
+import { TextField, Button,makeStyles } from '@material-ui/core'
 import './CreateVendor.css'
 import axios from 'axios'
 
-function CreateVendor() {
+const useStyles = makeStyles((theme) => ({
+  box:{
+    backgroundImage: "linear-gradient(to bottom right, lightblue 50%, white 50%)",
 
+},
+  boxForm:{
+    width:"600px",
+        margin:"0px auto",
+        padding:10,
+        paddingTop:10,
+        paddingBottom:40,
+        boxShadow:"inset 0 -3em 3em rgba(0,0,0,0.1),0 0  0 2px rgb(255,255,255),0.3em 0.3em 1em rgba(0,0,0,0.3)",
+        backgroundColor:"#fff"
+  },
+  header:{
+    marginBottom:20,
+    color:"white",
+    border:"1px solid #1abc9c",
+    backgroundColor:"#1abc9c",
+    textAlign:'center',
+    fontSize:30,
+    fontWeight:'bold',
+    paddingTop:-10
+
+},
+}))
+
+function CreateVendor() {
+  const classes = useStyles()
   const [vendorName, setVendorName] = useState('')
   const [regionName, setRegionName] = useState('')
   const [gunmenPrice, setGunmenPrice] = useState('')
@@ -63,9 +90,11 @@ function CreateVendor() {
     console.log('submitted')
   }
   return (
-    <div className="container">
-      <h1 style={{ textAlign: 'center' }}>Create Vendor</h1>
+    <div className = {classes.box}>
+    <div style={{paddingTop:20}} className="container">
+      
       <form onSubmit={submitHandler} >
+      <div className = {classes.header} >CREATE VENDOR</div>
         <TextField required id="standard-required" label="Vendor Name" name="vendor" onChange={vendorNameChangeHandler} value={vendorName} />
         <TextField required id="standard-required" label="Region Name" type="text" name="region" onChange={regionNameChangeHandler} value={regionName} />
         <TextField required id="standard-required" label="Gunmen Price per hour" type="text" name="gunmen" onChange={gunmenPriceChangeHandler} value={gunmenPrice} />
@@ -80,6 +109,7 @@ function CreateVendor() {
 
         <Button variant="contained" color="primary" type="submit">Create Vendor</Button>
       </form>
+    </div>
     </div>
   )
 }

@@ -139,13 +139,11 @@ const useStyles = makeStyles((theme) => ({
       const [toggleTime,setToggleTime] = useState('today')
       const [toggleSelectWorkforce,setToggleSelectWorkforce] = useState("Gunman")
       const [toggleSelectYear,setToggleSelectYear] = useState((new Date()).getFullYear())
-      const [dailyAttendance,setDailyAttendance] = useState({Gunman:0,Driver:0,Vehicle:0})
+      const [dailyAttendance,setDailyAttendance] = useState({Gunman:0,Driver:0,Vehicle:0,initial : false})
       const [monthlyAttendance,setMonthlyAttendance] = useState({Gunman:0,Driver:0,Vehicle:0  })
-      const [totalDailyAttendance,setTotalDailyAttendance] = useState({Gunman:0,Driver:0,Vehicle:0})
+      const [totalDailyAttendance,setTotalDailyAttendance] = useState({Gunman:0,Driver:0,Vehicle:0,initial : false})
       const [totalMonthlyAttendance,setTotalMonthlyAttendance] = useState({Gunman:0,Driver:0,Vehicle:0})
-      const [pie,setPie] = useState(
-        {labels:['Attended','Not Attended'],datasets:[{data:[10,20],backgroundColor:["#8cff1a","#ff4d4d"],borderColor:["#8cff1a","#ff4d4d"]}],}
-      )
+      const [pie,setPie] = useState()
       const [budgets,setBudgets] = useState({
         labels:['Jan','Feb','March','April','May','June','July',"Aug","Sept","Oct","Nov","Dec"],
         datasets:[{label:"Annual Budget Summary",data:[0,0,0,0,0,0,0,0,0,0,0,0],backgroundColor:Array(12).fill("#4d0000")}]
@@ -166,7 +164,7 @@ const useStyles = makeStyles((theme) => ({
               
             })
           })
-          console.log(daily_count)
+          daily_count.initial = true
           setTotalMonthlyAttendance(monthly_count)
           setTotalDailyAttendance(daily_count)
         })
@@ -182,6 +180,7 @@ const useStyles = makeStyles((theme) => ({
               })
             })
           })
+          copy.initial = true
           setDailyAttendance(copy)
         })
         let date = new Date()
@@ -217,8 +216,8 @@ const useStyles = makeStyles((theme) => ({
       },[toggleSelectYear])
 
       useEffect(() => {
-        setPie({labels:['Attended','Not Attended'],datasets:[{data:[dailyAttendance.Gunman,totalDailyAttendance.Gunman],backgroundColor:["#8cff1a","#ff4d4d"],borderColor:["#8cff1a","#ff4d4d"]}],})
-      },[totalDailyAttendance])
+        setPie({labels:['Attended','Not Attended'],datasets:[{data:[dailyAttendance.Gunman,totalDailyAttendance.Gunman - dailyAttendance.Gunman],backgroundColor:["#8cff1a","#ff4d4d"],borderColor:["#8cff1a","#ff4d4d"]}],})
+      },[totalDailyAttendance,dailyAttendance])
 
       function OnToggleTime(val){
         val == 'today'?setToggleTime("today"):setToggleTime("month")
@@ -251,8 +250,7 @@ const useStyles = makeStyles((theme) => ({
       const handleChangeYear = (event) => {
         setToggleSelectYear(event.target.value);
       };
-
-      if(!dailyAttendance || !monthlyAttendance || !pie || !totalDailyAttendance || !monthlyAttendance ||!budgets || !toggleSelectYear){
+      if(!dailyAttendance.initial || !monthlyAttendance || !pie || !totalDailyAttendance.initial || !monthlyAttendance ||!budgets || !toggleSelectYear){
         return <Loading />
       }
       return(

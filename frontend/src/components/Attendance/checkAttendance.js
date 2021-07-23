@@ -90,7 +90,7 @@ export default function CheckAttedance() {
 
     }, [drop_month])
 
-    useLayoutEffect(() => {
+    useEffect(() => {
 
         if(!cols.length>0){
             return

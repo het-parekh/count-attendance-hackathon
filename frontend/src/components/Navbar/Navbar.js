@@ -26,10 +26,9 @@ function Navbar(props) {
         <li><Link to="/checkattendance">Check Attendance </Link></li>
         <li><Link to="/billdetails">Bill Details </Link></li>
         <li><Link to="/createinvoice">Create Invoice</Link></li>
-        <li><Link to="/adduser">Add User</Link></li>
-        <li><div onClick={props.LogoutUser}>Logout <ExitToAppRoundedIcon /></div></li>
-        <li style={{ color: '#1a75ff', background: 'white', padding: '10px' }}>{props.region}</li>
-        <li style={{ color: '#1a75ff', background: 'white', padding: '10px', textTransform: '' }}>{props.role} Role</li>
+        {props.role == "Admin"?<li><Link to="/adduser">Add User</Link></li>:<li></li>}
+        <li style={{ color: '#1a75ff', background: 'white', padding: '10px' }}>{props.role}, {props.region}</li>
+        <li style={{marginLeft:80}} className="logout" ><div className="logout" onClick={props.LogoutUser}>Logout &nbsp;<ExitToAppRoundedIcon /></div></li>
       </ul>
     )
   }

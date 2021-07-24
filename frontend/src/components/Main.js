@@ -40,6 +40,18 @@ class Main extends Component {
                 <Loading />
             )
         }
+
+        const AdminRoute = ({ ...props }) => {
+            const isAdmin = this.props.Auth.role==="Admin"
+            const isAllowed = this.props.Auth.isAuthenticated
+
+            return isAdmin
+                ? (<Route {...props} />)
+                : isAllowed?(<Redirect to="/dashboard" />)
+                : (<Redirect to="/login"  />)
+                
+        };
+
         const PrivateRoute = ({ ...props }) => {
             const isAllowed = this.props.Auth.isAuthenticated
             return isAllowed
@@ -62,7 +74,7 @@ class Main extends Component {
 
                     <PublicRoute exact path='/login' component={() => <Login Auth={this.props.Auth} LoginUser={this.props.LoginUser} />}></PublicRoute>
 
-                    <PrivateRoute exact path='/adduser' component={AddUser}></PrivateRoute>
+                    <AdminRoute exact path='/adduser' component={AddUser}></AdminRoute>
                     <PrivateRoute exact path='/dashboard' component={Dashboard}></PrivateRoute>
                     <PrivateRoute exact path='/attendance' component={() => <Attendance region={this.props.Auth.region} />}></PrivateRoute>
                     <PrivateRoute exact path='/checkattendance' component={CheckAttedance}></PrivateRoute>

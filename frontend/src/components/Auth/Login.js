@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom:50,
         color:"white",
         border:"1px solid #1abc9c",
-        backgroundColor:"#1abc9c"
+        backgroundImage: "linear-gradient(to right,#00ccff,#1a75ff)",
 
     },
     box:{
@@ -97,7 +97,7 @@ export default function Login(props){
             </div>
             
             <div align="center">
-                <Button onSubmit={handleSubmit} type='submit' onClick={handleSubmit} variant = "contained" style={{backgroundColor:"#1abc9c",color:"#fff",marginTop:"30px"}}> lOG IN</Button>
+                <Button onSubmit={handleSubmit} type='submit' onClick={handleSubmit} variant = "contained" style={{backgroundColor:"#1a75ff",color:"#fff",marginTop:"30px"}}> lOG IN</Button>
             </div>
         </form>
         </div>

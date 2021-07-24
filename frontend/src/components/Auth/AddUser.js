@@ -23,11 +23,12 @@ const useStyles = makeStyles((theme) => ({
         marginBottom:50,
         color:"white",
         border:"1px solid #1abc9c",
-        backgroundColor:"#1abc9c"
+        backgroundImage: "linear-gradient(to right,#00ccff,#1a75ff)",
 
     },
     box:{
-        backgroundImage: "linear-gradient(to bottom right, lightblue 50%, white 50%)"
+        backgroundImage: "linear-gradient(to bottom right, lightblue 50%, white 50%)",
+        paddingTop:30
     },
     flashMessage:{
         color: theme.palette.success.dark,
@@ -205,11 +206,12 @@ export default function AddUser(){
                 >
                 </TextField>
             </div>
+            <center>
             <div>
             <TextField name = "role"
                     select
                     label = "Role"
-                    style={{width:"50ch"}}
+                    style={{width:"40ch"}}
                     value={dropdowns.role}
                     onChange={handleDropdowns}
             >
@@ -222,7 +224,7 @@ export default function AddUser(){
             <TextField name = "region"
                     select
                     label = "Select Region"
-                    style={{width:"50ch"}}
+                    style={{width:"40ch"}}
                     value={dropdowns.region}
                     onChange={handleDropdowns}       
                 >
@@ -240,7 +242,7 @@ export default function AddUser(){
             <TextField name = "branch"
                     select
                     label = "Select Branch"
-                    style={{width:"50ch"}}
+                    style={{width:"40ch"}}
                     value={dropdowns.branch}
                     onChange={handleDropdowns}
                 >
@@ -257,7 +259,7 @@ export default function AddUser(){
             <TextField name = "hub"
                     select
                     label = "Select Hub"
-                    style={{width:"50ch"}}
+                    style={{width:"40ch"}}
                     value={dropdowns.hub}
                     onChange={handleDropdowns}
             >
@@ -272,9 +274,9 @@ export default function AddUser(){
 
                 
             </div>
-            
+            </center>
             <div align="center">
-                <Button onClick={handleSubmit} variant = "contained" style={{backgroundColor:"#00b300",color:"#fff",marginTop:"30px"}}> Add User</Button>
+                <Button onClick={handleSubmit} variant = "contained" style={{backgroundColor:"#1a75ff",color:"#fff",marginTop:"30px"}}> Add User</Button>
             </div>
         </form>
         </div>

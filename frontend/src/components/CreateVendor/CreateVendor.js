@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom:20,
     color:"white",
     border:"1px solid #1abc9c",
-    backgroundColor:"#1abc9c",
+    backgroundImage: "linear-gradient(to right,#00ccff,#1a75ff)",
     textAlign:'center',
     fontSize:30,
     fontWeight:'bold',
@@ -107,7 +107,7 @@ function CreateVendor() {
 
 
 
-        <Button variant="contained" color="primary" type="submit">Create Vendor</Button>
+        <Button variant="contained" style={{backgroundColor:"#1a75ff",color:"white"}} type="submit">Create Vendor</Button>
       </form>
     </div>
     </div>

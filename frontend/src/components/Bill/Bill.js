@@ -120,7 +120,7 @@ export default function Bill() {
                         hub: r.invoice.Hub,
                         vendor: r.Vendor_ref.vendor_name,
                         invoice_no: r.invoice._id,
-                        service_month: months[r.service_month],
+                        service_month: months[r.service_month-1],
                         no_of_employees: r.number_of_employees.length,
                         base_cost: Math.round((r.base_cost + Number.EPSILON) * 100) / 100,
                         extra_charges: r.extra_charges,

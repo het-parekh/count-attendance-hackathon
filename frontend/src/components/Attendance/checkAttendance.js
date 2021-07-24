@@ -59,6 +59,7 @@ export default function CheckAttedance() {
     const [openInvoiceID,setOpenInvoiceID] = useState()
     const [drop_month,setMonth] = useState((new Date()).toLocaleString('default', { month: 'long' }))
     const [months,setMonths] = useState(['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'])
+    const [temp,setTemp] = useState('')
 
     useEffect(() => {
         let currentDate = new Date()
@@ -95,12 +96,13 @@ export default function CheckAttedance() {
         if(!cols.length>0){
             return
         }
+        
         axios.get(`/attendance/${cols['2'].field}/${cols[String(cols.length-1)].field}`)
         .then(res => {
            let  temp = {}
            res.data.forEach((Allattendance) => {
-               Allattendance.attendances.forEach((attendance) => {
-                   temp[attendance.invoice._id] = {...temp[attendance.invoice._id],"invoice_details":attendance.invoice,"open":false,[Allattendance.date]:{"present_employees":attendance.present_employee,"ot_hours":attendance.OT_hours}}
+               Allattendance.attendances.forEach((attendance,index) => {
+                   temp[attendance.invoice._id] = {...temp[attendance.invoice._id],"open":attendanceByInvoice[attendance.invoice._id]?attendanceByInvoice[attendance.invoice._id].open:false,"invoice_details":attendance.invoice,[Allattendance.date]:{"present_employees":attendance.present_employee,"ot_hours":attendance.OT_hours}}
                })
            })
            setAttendanceByInvoice(temp)
@@ -138,14 +140,15 @@ export default function CheckAttedance() {
                         hide_cols[index] = {...hide_cols[index],hide:true}
                     }
                 }
+                
             })
+            
+
             setCols(hide_cols)
             setRows({...rows,[openInvoiceID]:temp})
         }
-
     },[openInvoiceID])
-
-
+    
     
     function toggleView(value){
         
@@ -231,37 +234,41 @@ export default function CheckAttedance() {
 
         for(const invoice in attendanceByInvoice){    
             invoices_section.push(
-                <>
+                <div key={"parent" + invoice}>
                 <AppBar key={"appbar" + invoice} className={classes.appBar_root} position="static">
                     <Toolbar key={"toolbar" + invoice}>
                         <Typography key={"typo" + invoice} align="left" variant="h6" className={classes.title}>
-                            {attendanceByInvoice[invoice].invoice_details.Activity} <IconButton name={invoice} onClick={toggleInvoice}>{attendanceByInvoice[invoice].open?<Publish style={{ color: "white" }} />:<GetApp style={{ color: "white" }} />}</IconButton>
+                            {attendanceByInvoice[invoice].invoice_details.Activity} <IconButton key={"icon" + invoice} name={invoice} onClick={toggleInvoice}>{attendanceByInvoice[invoice].open?<Publish style={{ color: "white" }} />:<GetApp style={{ color: "white" }} />}</IconButton>
                         </Typography>
                         <Chip
                             avatar={<Avatar>R</Avatar>}
                             label={attendanceByInvoice[invoice].invoice_details.Region}
                             style={{color:"black"}}
+                            key={"chip1"+invoice}
                         />
                         &nbsp;
                         <Chip
                             avatar={<Avatar>B</Avatar>}
                             label={attendanceByInvoice[invoice].invoice_details.Branch}
                             style={{color:"black"}}
+                            key={"chip2"+invoice}
+
                         />&nbsp;
                         <Chip
                             avatar={<Avatar>H</Avatar>}
                             label={attendanceByInvoice[invoice].invoice_details.Hub}
                             style={{color:"black"}}
+                            key={"chip3"+invoice}
+
                         />&nbsp;&nbsp;&nbsp;
                         
                         <Button name={invoice} edge="end" variant="contained"><StopOutlined style={{color:"red"}}/>&nbsp;Stop Tracking</Button>
                     </Toolbar>
                 </AppBar>
-                <div key={"temp" + invoice} >
+                <div key={"tempdiv" + invoice} >
                     <Collapse in={attendanceByInvoice[invoice].open} key={"collapse" + invoice}>
                         <Paper className={classes.paper} key={"ppr" + invoice}>
                             <DataGrid
-                                key={"table"+invoice}
                                 rows={rows[invoice]?rows[invoice]:[]}
                                 columns={cols}
                                 components={{
@@ -274,8 +281,8 @@ export default function CheckAttedance() {
                             />
                         </Paper>
                     </Collapse>
-                    </div>
-                </>
+                </div>
+                </div>
                 )
             }
     }

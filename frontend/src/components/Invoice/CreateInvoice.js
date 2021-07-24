@@ -25,11 +25,12 @@ const useStyles = makeStyles((theme) => ({
         marginBottom:12,
         color:"white",
         border:"1px solid #1abc9c",
-        backgroundColor:"#1abc9c"
+        backgroundImage: "linear-gradient(to right,#00ccff,#1a75ff)",
 
     },
     box:{
-        backgroundImage: "linear-gradient(to bottom right, lightblue 50%, white 50%)"
+        backgroundImage: "linear-gradient(to bottom right, lightblue 50%, white 50%)",
+        paddingTop:30
     },
     flashMessage:{
         color: theme.palette.success.dark,
@@ -252,7 +253,7 @@ export default function CreateInvoice(){
                     </div>
             ))}
             <div align="center">
-                <Button onClick={handleSubmit} variant = "contained" style={{backgroundColor:"#00b300",color:"#fff",marginTop:"30px"}}> Add Invoice</Button>
+                <Button onClick={handleSubmit} variant = "contained" style={{backgroundColor:"#1a75ff",color:"#fff",marginTop:"30px"}}> Add Invoice</Button>
             </div>
             </div>
         </form>

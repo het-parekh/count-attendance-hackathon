@@ -48,6 +48,13 @@ nav ul li >*:hover{
   background-color: white;
 }
 
+
+
+.logout:hover{
+  color:white!important;
+  background-color:#ff3333!important;
+}
+
 .burger{
   cursor: pointer;
   display: none; 

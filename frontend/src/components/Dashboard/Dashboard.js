@@ -1,20 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import EventOutlinedIcon from '@material-ui/icons/EventOutlined';
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import Grid from '@material-ui/core/Grid';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import DescriptionIcon from '@material-ui/icons/Description';
 import { Pie, Bar } from "react-chartjs-2";
 import InputLabel from '@material-ui/core/InputLabel';
@@ -47,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
   barCard: {
     marginTop: -125,
     height: 400,
+    maxWidth:750
   },
   formControl: {
     margin: theme.spacing(1),
@@ -130,6 +124,7 @@ const useStyles = makeStyles((theme) => ({
       color: "black",
     }
   }
+}))
 
 
   const Dashboard = () => {
@@ -144,9 +139,8 @@ const useStyles = makeStyles((theme) => ({
       const [pie,setPie] = useState()
       const [budgets,setBudgets] = useState({
         labels:['Jan','Feb','March','April','May','June','July',"Aug","Sept","Oct","Nov","Dec"],
-        datasets:[{label:"Annual Budget Summary",data:[0,0,0,0,0,0,0,0,0,0,0,0],backgroundColor:Array(12).fill("#4d0000")}]
+        datasets:[{label:"Annual Budget Summary",data:[160,200,100,100,130,110,200,200,100,130,200,150],backgroundColor:Array(12).fill("#4d0000")}]
     })
-      useEffect(() => {
 
   useEffect(() => {
     axios.get('invoice')
@@ -180,27 +174,30 @@ const useStyles = makeStyles((theme) => ({
               copy[present.type] += 1
             })
           })
-          copy.initial = true
-          setDailyAttendance(copy)
+          
+          
         })
+        copy.initial = true
         setDailyAttendance(copy)
       })
-    let date = new Date()
-    let start_date = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().slice(0, 10)
-    let end_date = date.toISOString().slice(0, 10)
-    axios.get(`attendance/${start_date}/${end_date}`)
-      .then(res => {
-        let copy = { ...monthlyAttendance }
-        res.data.forEach((day) => {
-          day.attendances.forEach(manpower => {
-            manpower.present_employee.forEach((present) => {
-              copy[present.type] += 1
+      let date = new Date()
+      let start_date = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().slice(0, 10)
+      let end_date =  date.toISOString().slice(0, 10)
+      axios.get(`attendance/${start_date}/${end_date}`)
+        .then(res => {
+          let copy = { ...monthlyAttendance }
+          res.data.forEach((day) => {
+            day.attendances.forEach(manpower => {
+              manpower.present_employee.forEach((present) => {
+                copy[present.type] += 1
+              })
             })
+            setMonthlyAttendance(copy)
           })
-          setMonthlyAttendance(copy)
         })
-      })
 
+    },[])
+    
       useEffect(() => {
         axios.get('/bill/all')
         .then((res) => {
@@ -213,8 +210,6 @@ const useStyles = makeStyles((theme) => ({
           })
           setBudgets(copy)
         })
-        setBudgets(copy)
-      })
   }, [toggleSelectYear])
 
       useEffect(() => {
@@ -230,7 +225,7 @@ const useStyles = makeStyles((theme) => ({
           setToggleTime("today")
         }else{
           let copy = {...pie}
-          copy.datasets[0].data = [monthlyAttendance[toggleSelectWorkforce] , totalMonthlyAttendance[toggleSelectWorkforce] - monthlyAttendance[toggleSelectWorkforce]] 
+          copy.datasets[0].data = [monthlyAttendance[toggleSelectWorkforce] , totalMonthlyAttendance[toggleSelectWorkforce]] 
           setPie(copy)
           setToggleTime("month")
         }
@@ -243,7 +238,7 @@ const useStyles = makeStyles((theme) => ({
           copy.datasets[0].data = [dailyAttendance[event.target.value] , totalDailyAttendance[event.target.value] - dailyAttendance[event.target.value]] 
           setPie(copy)
         }else{
-          copy.datasets[0].data = [monthlyAttendance[event.target.value] , totalMonthlyAttendance[event.target.value] - monthlyAttendance[event.target.value]] 
+          copy.datasets[0].data = [monthlyAttendance[event.target.value] , totalMonthlyAttendance[event.target.value]] 
           setPie(copy)
         }
 
@@ -258,28 +253,6 @@ const useStyles = makeStyles((theme) => ({
       return(
         <div >
          <div className={classes.root}>
-          {/* Navbar */}
-            <AppBar className={classes.navbar} position="static" >
-              <Toolbar >
-                <IconButton
-                  edge="start"
-                  className={classes.menuButton}
-                  color="inherit"
-                  aria-label="open drawer"
-                >
-                  <MenuIcon />
-                </IconButton>
-                <Typography className={classes.title} variant="h6" noWrap>
-                  Dashboard
-                </Typography>
-                <Typography   variant="h6" noWrap>
-                  Logout
-                </Typography>
-                <IconButton  variant="h6" color="inherit">
-                < ExitToAppIcon/>
-                </IconButton>
-              </Toolbar>
-          </AppBar> */}
         {/* Grid */}
 
         <Grid className={classes.grid} container spacing={3}>
@@ -317,7 +290,7 @@ const useStyles = makeStyles((theme) => ({
                 </Typography>
               </CardContent>
               <CardActionArea>
-                <Link to='/adduser' style={{ color: "#e0e0e0" }}>
+                <Link to='/createvendor' style={{ color: "#e0e0e0" }}>
                   <Button style={{ width: 100, fontWeight: "bold", float: "right" }} color="primary" variant="outlined">GO  </Button>
                 </Link>
               </CardActionArea>

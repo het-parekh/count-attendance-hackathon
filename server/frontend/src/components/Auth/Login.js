@@ -77,11 +77,11 @@ export default function Login(props){
             <div className = {classes.header}>
                 <h2  align="center">LOGIN</h2>
             </div>
-            <div align="center" style={{color:"red"}}>
+            <div style={{color:"red"}}>
                 {props.Auth.err.email?props.Auth.err.email:props.Auth.err.password?props.Auth.err.password:null}
             </div>
-            <div align = "center">
-                <Typography color="secondary" variant="caption">Email : h@gmail.com &nbsp;&nbsp;&nbsp;Password : het</Typography>
+            <div align="center" style={{color:"#4d4d4d"}}>
+                <Typography style={{color:"#4d4d4d"}} variant="caption">Email : h@gmail.com &nbsp;&nbsp;&nbsp;Password : het</Typography>
             </div>
             <div>
                 <TextField name = "email"

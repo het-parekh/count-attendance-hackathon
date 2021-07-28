@@ -194,6 +194,7 @@ const useStyles = makeStyles((theme) => ({
             })
             setMonthlyAttendance(copy)
           })
+          setMonthlyAttendance(copy)
         })
 
     },[])

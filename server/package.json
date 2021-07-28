@@ -8,7 +8,7 @@
     "start": "node app.js",
     "start_dev": "cls && nodemon -r dotenv/config app",
     "client": "npm start --prefix ../frontend",
-    "dev": "concurrently \"npm run start_dev\" \"npm run client\" ",
+    "dev": "concurrently \"npm run start_dev\" \"npm run client\" "
   },
   "author": "",
   "license": "ISC",

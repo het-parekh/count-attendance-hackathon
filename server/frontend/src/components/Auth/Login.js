@@ -1,5 +1,5 @@
 import React,{useState} from 'react'
-import { TextField,Button} from '@material-ui/core'
+import { TextField,Button,Typography} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import Loading from '../Loading'
 
@@ -79,6 +79,9 @@ export default function Login(props){
             </div>
             <div align="center" style={{color:"red"}}>
                 {props.Auth.err.email?props.Auth.err.email:props.Auth.err.password?props.Auth.err.password:null}
+            </div>
+            <div>
+                <Typography variant="caption">Email : h@gmail.com &nbps;&nbps;&nbps;Password : het</Typography>
             </div>
             <div>
                 <TextField name = "email"

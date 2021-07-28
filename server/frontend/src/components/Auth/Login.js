@@ -80,8 +80,8 @@ export default function Login(props){
             <div align="center" style={{color:"red"}}>
                 {props.Auth.err.email?props.Auth.err.email:props.Auth.err.password?props.Auth.err.password:null}
             </div>
-            <div>
-                <Typography variant="caption">Email : h@gmail.com &nbps;&nbps;&nbps;Password : het</Typography>
+            <div align = "center">
+                <Typography color="secondary" variant="caption">Email : h@gmail.com &nbsp;&nbsp;&nbsp;Password : het</Typography>
             </div>
             <div>
                 <TextField name = "email"

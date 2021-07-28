@@ -5,8 +5,8 @@ import axios from 'axios'
 
 const useStyles = makeStyles((theme) => ({
   box:{
-    backgroundImage: "linear-gradient(to bottom right, lightblue 50%, white 50%)",
-
+    backgroundImage: "linear-gradient(to right,#00ccff,#1a75ff)",
+    height:"50vh"
 },
   boxForm:{
     width:"600px",

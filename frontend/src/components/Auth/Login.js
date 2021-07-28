@@ -27,16 +27,17 @@ const useStyles = makeStyles((theme) => ({
 
     },
     box:{
-        padding:80,
-        backgroundImage: "linear-gradient(to bottom right, lightblue 50%, white 50%)"
-    }
+        backgroundImage: "linear-gradient(to right,#00ccff,#1a75ff)",
+        paddingTop:30,
+        height:"50vh"
+    },
 }))
 
 export default function Login(props){
     const classes = useStyles()
 
     const [info,setInfo] = useState({email:"",password:""})
-    const [err,setErr] = useState({email:"",password:""})
+    const [err,setErr] = useState({email:"",password:"",login:""})
 
     function handleInput(e){
         setInfo({...info,[e.target.name] : e.target.value})
@@ -54,10 +55,15 @@ export default function Login(props){
         }
         const creds = { email: info.email, pass: info.password }
         props.LoginUser(creds)
-        setErr({email:"",password:""})
+        if(!props.Auth.isAuthenticated){
+            setErr({...err,login:"Invalid Credentials!"})
+        }
+        else{
+            setErr({email:"",password:"",login:""})
+        }
+        
 
     }
-
 
     if (props.Auth.isLoading) {
         return (
@@ -70,6 +76,9 @@ export default function Login(props){
         <form className={classes.root}>
             <div className = {classes.header}>
                 <h2  align="center">LOGIN</h2>
+            </div>
+            <div align="center" style={{color:"red"}}>
+                {props.Auth.err.email?props.Auth.err.email:props.Auth.err.password?props.Auth.err.password:null}
             </div>
             <div>
                 <TextField name = "email"

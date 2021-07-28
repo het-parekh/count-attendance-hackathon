@@ -27,8 +27,9 @@ const useStyles = makeStyles((theme) => ({
 
     },
     box:{
-        backgroundImage: "linear-gradient(to bottom right, lightblue 50%, white 50%)",
-        paddingTop:30
+        backgroundImage: "linear-gradient(to right,#00ccff,#1a75ff)",
+        paddingTop:30,
+        height:"50vh"
     },
     flashMessage:{
         color: theme.palette.success.dark,
